@@ -1,4 +1,5 @@
 #include <SFML/Graphics.hpp>
+#include <iostream>
 
 int main()
 {
@@ -21,10 +22,30 @@ int main()
   opponent.setFillColor(sf::Color::Blue);
   sf::Vector2f opponentVelocity{0.f, 0.f};
 
-  // sf::Font font;
-  // font.loadFromFile("C:\Windows\Fonts\Arial.ttf");
-  // sf::Text text;
-  // text.setString("")
+
+  sf::Font font;
+  if (!font.loadFromFile("C:\\Windows\\Fonts\\Arial.ttf"))
+  {
+    std::cout << "Couldn't load font" << '\n';
+    return -1;
+  }
+
+  sf::Text menuText;
+  menuText.setFont(font);
+  menuText.setString("Press space to play.");
+  menuText.setFillColor(sf::Color::White);
+  menuText.setCharacterSize(32);
+
+  sf::Text loseText;
+  loseText.setFont(font);
+  loseText.setString("You lose!\nPress space to play again.");
+  loseText.setFillColor(sf::Color::White);
+  loseText.setCharacterSize(32);
+
+
+  bool menu{true};
+  bool playing{false};
+  bool lose{false};
 
   while (window.isOpen())
   {
@@ -37,106 +58,167 @@ int main()
       }
       else if (event.type == sf::Event::KeyPressed)
       {
-        if (event.key.code == sf::Keyboard::Up)
+        if (playing)
         {
-          movePlayerUp = true;
+          if (event.key.code == sf::Keyboard::Up)
+          {
+            movePlayerUp = true;
+          }
+          else if (event.key.code == sf::Keyboard::Down)
+          {
+            movePlayerDown = true;
+          }
         }
-        else if (event.key.code == sf::Keyboard::Down)
+        else if (menu)
         {
-          movePlayerDown = true;
+          if (event.key.code == sf::Keyboard::Space)
+          {
+            menu = false;
+            playing = true;
+          }
+        }
+        else if (lose)
+        {
+          if (event.key.code == sf::Keyboard::Space)
+          {
+            lose = false;
+            playing = true;
+
+            // Reset all entities' positions and velocities
+            ball.setPosition(100, 50);
+            ballVelocity.x = 0.1f;
+            ballVelocity.y = 0.1f;
+
+            player.setPosition(10, 50);
+            playerVelocity.x = 0.f;
+            playerVelocity.y = 0.f;
+            movePlayerUp = false;
+            movePlayerDown = false;
+            
+            opponent.setPosition(window.getSize().x - (10 + opponent.getGlobalBounds().width), 50);
+            opponentVelocity.x = 0.f;
+            opponentVelocity.y = 0.f;
+          }
         }
       }
       else if (event.type == sf::Event::KeyReleased)
       {
-        if (event.key.code == sf::Keyboard::Up)
+        if (playing)
         {
-          movePlayerUp = false;
-        }
-        else if (event.key.code == sf::Keyboard::Down)
-        {
-          movePlayerDown = false;
+          if (event.key.code == sf::Keyboard::Up)
+          {
+            movePlayerUp = false;
+          }
+          else if (event.key.code == sf::Keyboard::Down)
+          {
+            movePlayerDown = false;
+          }
         }
       }
     }
 
-    // Set Opponent velocity
-    if (ball.getPosition().y < opponent.getGlobalBounds().top + opponent.getGlobalBounds().height / 2)
-    {
-      opponentVelocity.y = -0.1f;
-    }
-    else if (ball.getPosition().y > opponent.getGlobalBounds().top + opponent.getGlobalBounds().height / 2)
-    {
-      opponentVelocity.y = 0.1f;
-    }
-    else
-    {
-      opponentVelocity.y = 0.f;
+    if (playing) {
+      if (ball.getGlobalBounds().left < 0)
+      {
+        lose = true;
+        playing = false;
+      }
     }
 
-    // Set Player velocity
-    if (movePlayerUp)
+    if (playing)
     {
-      playerVelocity.y = -0.1f;
-    }
-    else if (movePlayerDown)
-    {
-      playerVelocity.y = 0.1f;
-    }
-    else
-    {
-      playerVelocity.y = 0.f;
-    }
+      // Set Opponent velocity
+      if (ball.getPosition().y < opponent.getGlobalBounds().top + opponent.getGlobalBounds().height / 2)
+      {
+        opponentVelocity.y = -0.1f;
+      }
+      else if (ball.getPosition().y > opponent.getGlobalBounds().top + opponent.getGlobalBounds().height / 2)
+      {
+        opponentVelocity.y = 0.1f;
+      }
+      else
+      {
+        opponentVelocity.y = 0.f;
+      }
 
-    player.move(playerVelocity);
-    ball.move(ballVelocity);
-    opponent.move(opponentVelocity);
+      // Set Player velocity
+      if (movePlayerUp)
+      {
+        playerVelocity.y = -0.1f;
+      }
+      else if (movePlayerDown)
+      {
+        playerVelocity.y = 0.1f;
+      }
+      else
+      {
+        playerVelocity.y = 0.f;
+      }
 
-    // Handle Ball-Wall collision
-    if (ball.getGlobalBounds().left < 0 && ballVelocity.x < 0 || ball.getGlobalBounds().left + ball.getGlobalBounds().width > window.getSize().x && ballVelocity.x > 0)
-    {
-      ballVelocity.x *= -1;
-    }
-    if (ball.getGlobalBounds().top < 0 && ballVelocity.y < 0 || ball.getGlobalBounds().top + ball.getGlobalBounds().height > window.getSize().y && ballVelocity.y > 0)
-    {
-      ballVelocity.y *= -1;
-    }
+      player.move(playerVelocity);
+      ball.move(ballVelocity);
+      opponent.move(opponentVelocity);
 
-    // Handle Player-Wall collision
-    if (player.getGlobalBounds().top < 0)
-    {
-      player.setPosition(player.getPosition().x, 0);
-    }
-    else if (player.getGlobalBounds().top + player.getGlobalBounds().height > window.getSize().y)
-    {
-      player.setPosition(player.getPosition().x, window.getSize().y - player.getGlobalBounds().height);
-    }
+      // Handle Ball-Wall collision
+      if (ball.getGlobalBounds().left < 0 && ballVelocity.x < 0 || ball.getGlobalBounds().left + ball.getGlobalBounds().width > window.getSize().x && ballVelocity.x > 0)
+      {
+        ballVelocity.x *= -1;
+      }
+      if (ball.getGlobalBounds().top < 0 && ballVelocity.y < 0 || ball.getGlobalBounds().top + ball.getGlobalBounds().height > window.getSize().y && ballVelocity.y > 0)
+      {
+        ballVelocity.y *= -1;
+      }
 
-    // Handle Opponent-Wall collision
-    if (opponent.getGlobalBounds().top < 0)
-    {
-      opponent.setPosition(opponent.getPosition().x, 0);
-    }
-    else if (opponent.getGlobalBounds().top + opponent.getGlobalBounds().height > window.getSize().y)
-    {
-      opponent.setPosition(opponent.getPosition().x, window.getSize().y - opponent.getGlobalBounds().height);
-    }
+      // Handle Player-Wall collision
+      if (player.getGlobalBounds().top < 0)
+      {
+        player.setPosition(player.getPosition().x, 0);
+      }
+      else if (player.getGlobalBounds().top + player.getGlobalBounds().height > window.getSize().y)
+      {
+        player.setPosition(player.getPosition().x, window.getSize().y - player.getGlobalBounds().height);
+      }
 
-    // Handle Player-Ball collision
-    if (player.getGlobalBounds().intersects(ball.getGlobalBounds()) && ballVelocity.x < 0)
-    {
-      ballVelocity.x *= -1;
-    }
+      // Handle Opponent-Wall collision
+      if (opponent.getGlobalBounds().top < 0)
+      {
+        opponent.setPosition(opponent.getPosition().x, 0);
+      }
+      else if (opponent.getGlobalBounds().top + opponent.getGlobalBounds().height > window.getSize().y)
+      {
+        opponent.setPosition(opponent.getPosition().x, window.getSize().y - opponent.getGlobalBounds().height);
+      }
 
-    // Handle Opponent-Ball collision
-    if (opponent.getGlobalBounds().intersects(ball.getGlobalBounds()) && ballVelocity.x > 0)
-    {
-      ballVelocity.x *= -1;
+      // Handle Player-Ball collision
+      if (player.getGlobalBounds().intersects(ball.getGlobalBounds()) && ballVelocity.x < 0)
+      {
+        ballVelocity.x *= -1;
+      }
+
+      // Handle Opponent-Ball collision
+      if (opponent.getGlobalBounds().intersects(ball.getGlobalBounds()) && ballVelocity.x > 0)
+      {
+        ballVelocity.x *= -1;
+      }
     }
 
     window.clear();
-    window.draw(ball);
-    window.draw(player);
-    window.draw(opponent);
+
+    if (playing)
+    {
+      window.draw(ball);
+      window.draw(player);
+      window.draw(opponent);
+    }
+    else if (menu)
+    {
+      window.draw(menuText);
+    }
+    else if (lose)
+    {
+      window.draw(loseText);
+    }
+    
     window.display();
   }
 }
