@@ -1,24 +1,25 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
+#include <random>
 
 int main()
 {
   sf::RenderWindow window{sf::VideoMode{500, 500}, "Pong"};
 
   sf::CircleShape ball{5.f};
-  ball.setPosition(100, 50);
+  ball.setPosition(window.getSize().x / 2.f, window.getSize().y / 2.f);
   ball.setFillColor(sf::Color::Green);
   sf::Vector2f ballVelocity{0.1f, 0.1f};
 
   sf::RectangleShape player{sf::Vector2f{10.f, 100.f}};
-  player.setPosition(10, 50);
+  player.setPosition(10, window.getSize().y / 2.f - player.getGlobalBounds().height / 2.f);
   player.setFillColor(sf::Color::Red);
   sf::Vector2f playerVelocity{0.f, 0.f};
   bool movePlayerUp{false};
   bool movePlayerDown{false};
 
   sf::RectangleShape opponent{sf::Vector2f{10.f, 100.f}};
-  opponent.setPosition(window.getSize().x - (10 + opponent.getGlobalBounds().width), 50);
+  opponent.setPosition(window.getSize().x - (10 + opponent.getGlobalBounds().width),  window.getSize().y / 2.f - opponent.getGlobalBounds().height / 2.f);
   opponent.setFillColor(sf::Color::Blue);
   sf::Vector2f opponentVelocity{0.f, 0.f};
 
@@ -46,6 +47,11 @@ int main()
   bool menu{true};
   bool playing{false};
   bool lose{false};
+
+
+  std::random_device randomDevice;
+  std::mt19937 generator{randomDevice()};
+  std::uniform_real_distribution<float> distribution{0, 1};
 
   while (window.isOpen())
   {
@@ -85,17 +91,17 @@ int main()
             playing = true;
 
             // Reset all entities' positions and velocities
-            ball.setPosition(100, 50);
+            ball.setPosition(window.getSize().x / 2.f, window.getSize().y / 2.f);
             ballVelocity.x = 0.1f;
             ballVelocity.y = 0.1f;
 
-            player.setPosition(10, 50);
+            player.setPosition(10, window.getSize().y / 2.f - player.getGlobalBounds().height / 2.f);
             playerVelocity.x = 0.f;
             playerVelocity.y = 0.f;
             movePlayerUp = false;
             movePlayerDown = false;
             
-            opponent.setPosition(window.getSize().x - (10 + opponent.getGlobalBounds().width), 50);
+            opponent.setPosition(window.getSize().x - (10 + opponent.getGlobalBounds().width),  window.getSize().y / 2.f - opponent.getGlobalBounds().height / 2.f);
             opponentVelocity.x = 0.f;
             opponentVelocity.y = 0.f;
           }
@@ -128,13 +134,22 @@ int main()
     if (playing)
     {
       // Set Opponent velocity
-      if (ball.getPosition().y < opponent.getGlobalBounds().top + opponent.getGlobalBounds().height / 2)
+      // This doesn't create the AI I was hoping for
+      // if (distribution(generator) > 0.4f && ball.getGlobalBounds().left > window.getSize().x / 2.f && ballVelocity.x > 0)
+      if (ball.getGlobalBounds().left > window.getSize().x / 2.f && ballVelocity.x > 0)
       {
-        opponentVelocity.y = -0.1f;
-      }
-      else if (ball.getPosition().y > opponent.getGlobalBounds().top + opponent.getGlobalBounds().height / 2)
-      {
-        opponentVelocity.y = 0.1f;
+        if (ball.getPosition().y < opponent.getGlobalBounds().top + opponent.getGlobalBounds().height / 2)
+        {
+          opponentVelocity.y = -0.1f;
+        }
+        else if (ball.getPosition().y > opponent.getGlobalBounds().top + opponent.getGlobalBounds().height / 2)
+        {
+          opponentVelocity.y = 0.1f;
+        }
+        else
+        {
+          opponentVelocity.y = 0.f;
+        }
       }
       else
       {
