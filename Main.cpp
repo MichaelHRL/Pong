@@ -8,7 +8,7 @@ int main()
   sf::CircleShape ball{5.f};
   ball.setPosition(window.getSize().x / 2.f, window.getSize().y / 2.f);
   ball.setFillColor(sf::Color::Green);
-  sf::Vector2f ballVelocity{0.1f, 0.1f};
+  sf::Vector2f ballVelocity{300.f, 300.f};
 
   sf::RectangleShape player{sf::Vector2f{10.f, 100.f}};
   player.setPosition(10, window.getSize().y / 2.f - player.getGlobalBounds().height / 2.f);
@@ -46,6 +46,13 @@ int main()
   bool menu{true};
   bool playing{false};
   bool lose{false};
+
+
+  sf::Clock clock{};
+  sf::Time accumulator{};
+
+  // Simulation runs at 100fps
+  sf::Time timeStep{sf::seconds(0.01f)};
 
 
   while (window.isOpen())
@@ -87,8 +94,8 @@ int main()
 
             // Reset all entities' positions and velocities
             ball.setPosition(window.getSize().x / 2.f, window.getSize().y / 2.f);
-            ballVelocity.x = 0.1f;
-            ballVelocity.y = 0.1f;
+            ballVelocity.x = 300.f;
+            ballVelocity.y = 300.f;
 
             player.setPosition(10, window.getSize().y / 2.f - player.getGlobalBounds().height / 2.f);
             playerVelocity.x = 0.f;
@@ -133,11 +140,11 @@ int main()
       {
         if (ball.getPosition().y < opponent.getGlobalBounds().top + opponent.getGlobalBounds().height / 2)
         {
-          opponentVelocity.y = -0.1f;
+          opponentVelocity.y = -300.f;
         }
         else if (ball.getPosition().y > opponent.getGlobalBounds().top + opponent.getGlobalBounds().height / 2)
         {
-          opponentVelocity.y = 0.1f;
+          opponentVelocity.y = 300.f;
         }
         else
         {
@@ -152,20 +159,32 @@ int main()
       // Set Player velocity
       if (movePlayerUp)
       {
-        playerVelocity.y = -0.1f;
+        playerVelocity.y = -300.f;
       }
       else if (movePlayerDown)
       {
-        playerVelocity.y = 0.1f;
+        playerVelocity.y = 300.f;
       }
       else
       {
         playerVelocity.y = 0.f;
       }
 
-      player.move(playerVelocity);
-      ball.move(ballVelocity);
-      opponent.move(opponentVelocity);
+      sf::Time frameTime{clock.restart()};
+      if (frameTime.asSeconds() > 0.1f)
+      {
+        frameTime = sf::seconds(0.1f);
+      }
+      accumulator += frameTime;
+
+      while (accumulator >= timeStep)
+      {
+        player.move(playerVelocity * timeStep.asSeconds());
+        ball.move(ballVelocity * timeStep.asSeconds());
+        opponent.move(opponentVelocity * timeStep.asSeconds());
+
+        accumulator -= timeStep;
+      }
 
       // Handle Ball-Wall collision
       if (ball.getGlobalBounds().left < 0 && ballVelocity.x < 0 || ball.getGlobalBounds().left + ball.getGlobalBounds().width > window.getSize().x && ballVelocity.x > 0)
