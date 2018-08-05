@@ -1,6 +1,5 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
-#include <random>
 
 int main()
 {
@@ -48,10 +47,6 @@ int main()
   bool playing{false};
   bool lose{false};
 
-
-  std::random_device randomDevice;
-  std::mt19937 generator{randomDevice()};
-  std::uniform_real_distribution<float> distribution{0, 1};
 
   while (window.isOpen())
   {
@@ -134,8 +129,6 @@ int main()
     if (playing)
     {
       // Set Opponent velocity
-      // This doesn't create the AI I was hoping for
-      // if (distribution(generator) > 0.4f && ball.getGlobalBounds().left > window.getSize().x / 2.f && ballVelocity.x > 0)
       if (ball.getGlobalBounds().left > window.getSize().x / 2.f && ballVelocity.x > 0)
       {
         if (ball.getPosition().y < opponent.getGlobalBounds().top + opponent.getGlobalBounds().height / 2)
