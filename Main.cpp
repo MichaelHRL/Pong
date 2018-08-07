@@ -45,10 +45,17 @@ int main()
   loseText.setFillColor(sf::Color::White);
   loseText.setCharacterSize(32);
 
+  sf::Text winText;
+  winText.setFont(font);
+  winText.setString("You win!\nPress space to play again.");
+  winText.setFillColor(sf::Color::White);
+  winText.setCharacterSize(32);
+
 
   bool menu{true};
   bool playing{false};
   bool lose{false};
+  bool win{false};
 
 
   sf::Clock clock{};
@@ -111,6 +118,29 @@ int main()
             opponentVelocity.y = 0.f;
           }
         }
+        else if (win)
+        {
+          if (event.key.code == sf::Keyboard::Space)
+          {
+            win = false;
+            playing = true;
+
+            // Reset all entities' positions and velocities
+            ball.setPosition(window.getSize().x / 2.f, window.getSize().y / 2.f);
+            ballVelocity.x = 300.f;
+            ballVelocity.y = 300.f;
+
+            player.setPosition(10, window.getSize().y / 2.f - player.getGlobalBounds().height / 2.f);
+            playerVelocity.x = 0.f;
+            playerVelocity.y = 0.f;
+            movePlayerUp = false;
+            movePlayerDown = false;
+            
+            opponent.setPosition(window.getSize().x - (10 + opponent.getGlobalBounds().width),  window.getSize().y / 2.f - opponent.getGlobalBounds().height / 2.f);
+            opponentVelocity.x = 0.f;
+            opponentVelocity.y = 0.f;
+          }
+        }
       }
       else if (event.type == sf::Event::KeyReleased)
       {
@@ -132,6 +162,11 @@ int main()
       if (ball.getGlobalBounds().left < 0)
       {
         lose = true;
+        playing = false;
+      }
+      else if (ball.getGlobalBounds().left + ball.getGlobalBounds().width > window.getSize().x)
+      {
+        win = true;
         playing = false;
       }
     }
@@ -258,6 +293,10 @@ int main()
     else if (lose)
     {
       window.draw(loseText);
+    }
+    else if (win)
+    {
+      window.draw(winText);
     }
     
     window.display();
