@@ -9,6 +9,9 @@ int main()
   ball.setPosition(window.getSize().x / 2.f, window.getSize().y / 2.f);
   ball.setFillColor(sf::Color::Green);
   sf::Vector2f ballVelocity{300.f, 300.f};
+  sf::Vector2f previousBallPosition{ball.getPosition()};
+  sf::Vector2f currentBallPosition{ball.getPosition()};
+  
 
   sf::RectangleShape player{sf::Vector2f{10.f, 100.f}};
   player.setPosition(10, window.getSize().y / 2.f - player.getGlobalBounds().height / 2.f);
@@ -170,6 +173,7 @@ int main()
         playerVelocity.y = 0.f;
       }
 
+      // Framerate independent
       sf::Time frameTime{clock.restart()};
       if (frameTime.asSeconds() > 0.1f)
       {
@@ -180,7 +184,11 @@ int main()
       while (accumulator >= timeStep)
       {
         player.move(playerVelocity * timeStep.asSeconds());
+
+        previousBallPosition = currentBallPosition;
         ball.move(ballVelocity * timeStep.asSeconds());
+        currentBallPosition = ball.getPosition();
+
         opponent.move(opponentVelocity * timeStep.asSeconds());
 
         accumulator -= timeStep;
@@ -233,7 +241,13 @@ int main()
 
     if (playing)
     {
+      float alpha{accumulator.asSeconds() / timeStep.asSeconds()};
+
+      sf::Vector2f interpolatedBallPosition{currentBallPosition * alpha + previousBallPosition * (1.0f - alpha)};      
+      ball.setPosition(interpolatedBallPosition);
       window.draw(ball);
+      ball.setPosition(currentBallPosition);
+
       window.draw(player);
       window.draw(opponent);
     }
