@@ -1,5 +1,6 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
+#include <cmath>
 
 int main()
 {
@@ -262,7 +263,14 @@ int main()
       // Handle Player-Ball collision
       if (player.getGlobalBounds().intersects(ball.getGlobalBounds()) && ballVelocity.x < 0)
       {
-        ballVelocity.x *= -1;
+        sf::Vector2f contactPoint{player.getGlobalBounds().left + player.getGlobalBounds().width, ball.getPosition().y};
+        sf::Vector2f translatedContactPoint{contactPoint.x - (player.getGlobalBounds().left + player.getGlobalBounds().width), contactPoint.y - player.getGlobalBounds().top};
+        
+        float alpha{80 * (translatedContactPoint.y / (player.getGlobalBounds().height / 2) - 1)};
+        double magnitude{std::sqrt(std::pow(ballVelocity.x, 2) + std::pow(ballVelocity.y, 2))};
+        constexpr float pi{3.14159265359};
+        ballVelocity.x = magnitude * std::cos(alpha * (pi / 180));
+        ballVelocity.y = magnitude * std::sin(alpha * (pi / 180));
       }
 
       // Handle Opponent-Ball collision
