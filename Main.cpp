@@ -9,7 +9,7 @@ int main()
   sf::CircleShape ball{5.f};
   ball.setPosition(window.getSize().x / 2.f, window.getSize().y / 2.f);
   ball.setFillColor(sf::Color::Green);
-  sf::Vector2f ballVelocity{300.f, 300.f};
+  sf::Vector2f ballVelocity{424.f, 0.f};
   sf::Vector2f previousBallPosition{ball.getPosition()};
   sf::Vector2f currentBallPosition{ball.getPosition()};
   
@@ -105,8 +105,8 @@ int main()
 
             // Reset all entities' positions and velocities
             ball.setPosition(window.getSize().x / 2.f, window.getSize().y / 2.f);
-            ballVelocity.x = 300.f;
-            ballVelocity.y = 300.f;
+            ballVelocity.x = 424.f;
+            ballVelocity.y = 0.f;
 
             player.setPosition(10, window.getSize().y / 2.f - player.getGlobalBounds().height / 2.f);
             playerVelocity.x = 0.f;
@@ -128,8 +128,8 @@ int main()
 
             // Reset all entities' positions and velocities
             ball.setPosition(window.getSize().x / 2.f, window.getSize().y / 2.f);
-            ballVelocity.x = 300.f;
-            ballVelocity.y = 300.f;
+            ballVelocity.x = 424.f;
+            ballVelocity.y = 0.f;
 
             player.setPosition(10, window.getSize().y / 2.f - player.getGlobalBounds().height / 2.f);
             playerVelocity.x = 0.f;
@@ -266,7 +266,8 @@ int main()
         sf::Vector2f contactPoint{player.getGlobalBounds().left + player.getGlobalBounds().width, ball.getPosition().y};
         sf::Vector2f translatedContactPoint{contactPoint.x - (player.getGlobalBounds().left + player.getGlobalBounds().width), contactPoint.y - player.getGlobalBounds().top};
         
-        float alpha{80 * (translatedContactPoint.y / (player.getGlobalBounds().height / 2) - 1)};
+        float maxAngle{50};
+        float alpha{maxAngle * (translatedContactPoint.y / (player.getGlobalBounds().height / 2) - 1)};
         double magnitude{std::sqrt(std::pow(ballVelocity.x, 2) + std::pow(ballVelocity.y, 2))};
         constexpr float pi{3.14159265359};
         ballVelocity.x = magnitude * std::cos(alpha * (pi / 180));
@@ -276,7 +277,15 @@ int main()
       // Handle Opponent-Ball collision
       if (opponent.getGlobalBounds().intersects(ball.getGlobalBounds()) && ballVelocity.x > 0)
       {
-        ballVelocity.x *= -1;
+        sf::Vector2f contactPoint{opponent.getGlobalBounds().left, ball.getPosition().y};
+        sf::Vector2f translatedContactPoint{contactPoint.x - opponent.getGlobalBounds().left, contactPoint.y - opponent.getGlobalBounds().top};
+        
+        float maxAngle{50};
+        float alpha{maxAngle * (translatedContactPoint.y / (opponent.getGlobalBounds().height / 2) - 1)};
+        double magnitude{std::sqrt(std::pow(ballVelocity.x, 2) + std::pow(ballVelocity.y, 2))};
+        constexpr float pi{3.14159265359};
+        ballVelocity.x = magnitude * std::cos(alpha * (pi / 180)) * -1;
+        ballVelocity.y = magnitude * std::sin(alpha * (pi / 180));
       }
     }
 
