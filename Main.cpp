@@ -149,27 +149,76 @@ void handleOpponenetBallCollision(sf::RectangleShape& opponent, sf::CircleShape&
   }
 }
 
+
+sf::CircleShape createBall(sf::RenderWindow& window)
+{
+  sf::CircleShape ball{5.f};
+  ball.setPosition(window.getSize().x / 2.f, window.getSize().y / 2.f);
+  ball.setFillColor(sf::Color::Green);
+  return ball;
+}
+
+sf::RectangleShape createPlayer(sf::RenderWindow& window)
+{
+  sf::RectangleShape player{sf::Vector2f{10.f, 100.f}};
+  player.setPosition(10, window.getSize().y / 2.f - player.getGlobalBounds().height / 2.f);
+  player.setFillColor(sf::Color::Red);
+  return player;
+}
+
+sf::RectangleShape createOpponent(sf::RenderWindow& window)
+{
+  sf::RectangleShape opponent{sf::Vector2f{10.f, 100.f}};
+  opponent.setPosition(window.getSize().x - (10 + opponent.getGlobalBounds().width),  window.getSize().y / 2.f - opponent.getGlobalBounds().height / 2.f);
+  opponent.setFillColor(sf::Color::Blue);
+  return opponent;
+}
+
+sf::Text createMenuText(sf::Font& font)
+{
+  sf::Text menuText;
+  menuText.setFont(font);
+  menuText.setString("Press space to play.");
+  menuText.setFillColor(sf::Color::White);
+  menuText.setCharacterSize(32);
+  return menuText;
+}
+
+sf::Text createLoseText(sf::Font& font)
+{
+  sf::Text loseText;
+  loseText.setFont(font);
+  loseText.setString("You lose!\nPress space to play again.");
+  loseText.setFillColor(sf::Color::White);
+  loseText.setCharacterSize(32);
+  return loseText;
+}
+
+sf::Text createWinText(sf::Font& font)
+{
+  sf::Text winText;
+  winText.setFont(font);
+  winText.setString("You win!\nPress space to play again.");
+  winText.setFillColor(sf::Color::White);
+  winText.setCharacterSize(32);
+  return winText;
+}
+
 int main()
 {
   sf::RenderWindow window{sf::VideoMode{500, 500}, "Pong"};
 
-  sf::CircleShape ball{5.f};
-  ball.setPosition(window.getSize().x / 2.f, window.getSize().y / 2.f);
-  ball.setFillColor(sf::Color::Green);
+  sf::CircleShape ball{createBall(window)};
   sf::Vector2f ballVelocity{424.f, 0.f};
   sf::Vector2f previousBallPosition{ball.getPosition()};
   sf::Vector2f currentBallPosition{ball.getPosition()};
   
-  sf::RectangleShape player{sf::Vector2f{10.f, 100.f}};
-  player.setPosition(10, window.getSize().y / 2.f - player.getGlobalBounds().height / 2.f);
-  player.setFillColor(sf::Color::Red);
+  sf::RectangleShape player{createPlayer(window)};
   sf::Vector2f playerVelocity{0.f, 0.f};
   bool movePlayerUp{false};
   bool movePlayerDown{false};
 
-  sf::RectangleShape opponent{sf::Vector2f{10.f, 100.f}};
-  opponent.setPosition(window.getSize().x - (10 + opponent.getGlobalBounds().width),  window.getSize().y / 2.f - opponent.getGlobalBounds().height / 2.f);
-  opponent.setFillColor(sf::Color::Blue);
+  sf::RectangleShape opponent{createOpponent(window)};
   sf::Vector2f opponentVelocity{0.f, 0.f};
 
 
@@ -180,23 +229,9 @@ int main()
     return -1;
   }
 
-  sf::Text menuText;
-  menuText.setFont(font);
-  menuText.setString("Press space to play.");
-  menuText.setFillColor(sf::Color::White);
-  menuText.setCharacterSize(32);
-
-  sf::Text loseText;
-  loseText.setFont(font);
-  loseText.setString("You lose!\nPress space to play again.");
-  loseText.setFillColor(sf::Color::White);
-  loseText.setCharacterSize(32);
-
-  sf::Text winText;
-  winText.setFont(font);
-  winText.setString("You win!\nPress space to play again.");
-  winText.setFillColor(sf::Color::White);
-  winText.setCharacterSize(32);
+  sf::Text menuText{createMenuText(font)};
+  sf::Text loseText{createLoseText(font)};
+  sf::Text winText{createWinText(font)};
 
 
   bool menu{true};
@@ -313,7 +348,6 @@ int main()
     if (playing)
     {
       float alpha{accumulator.asSeconds() / timeStep.asSeconds()};
-
       sf::Vector2f interpolatedBallPosition{currentBallPosition * alpha + previousBallPosition * (1.0f - alpha)};      
       ball.setPosition(interpolatedBallPosition);
       window.draw(ball);
