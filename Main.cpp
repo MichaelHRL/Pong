@@ -213,6 +213,65 @@ void drawBall(sf::CircleShape& ball, sf::Vector2f& currentBallPosition, sf::Vect
   ball.setPosition(currentBallPosition);
 }
 
+
+void handleKeyPressEvent(bool& playing, bool& menu, bool& lose, bool& win, sf::Event& event, bool& movePlayerUp, bool& movePlayerDown, sf::CircleShape& ball, sf::RectangleShape& player, sf::RectangleShape& opponent, sf::RenderWindow& window, sf::Vector2f& ballVelocity, sf::Vector2f& playerVelocity, sf::Vector2f& opponentVelocity)
+{
+  if (playing)
+  {
+    if (event.key.code == sf::Keyboard::Up)
+    {
+      movePlayerUp = true;
+    }
+    else if (event.key.code == sf::Keyboard::Down)
+    {
+      movePlayerDown = true;
+    }
+  }
+  else if (menu)
+  {
+    if (event.key.code == sf::Keyboard::Space)
+    {
+      menu = false;
+      playing = true;
+    }
+  }
+  else if (lose)
+  {
+    if (event.key.code == sf::Keyboard::Space)
+    {
+      lose = false;
+      playing = true;
+
+      resetEntities(ball, player, opponent, window, ballVelocity, playerVelocity, opponentVelocity, movePlayerUp, movePlayerUp);
+    }
+  }
+  else if (win)
+  {
+    if (event.key.code == sf::Keyboard::Space)
+    {
+      win = false;
+      playing = true;
+
+      resetEntities(ball, player, opponent, window, ballVelocity, playerVelocity, opponentVelocity, movePlayerUp, movePlayerUp);
+    }
+  }
+}
+
+void handleKeyReleaseEvent(bool& playing, sf::Event& event, bool& movePlayerUp, bool& movePlayerDown)
+{
+  if (playing)
+  {
+    if (event.key.code == sf::Keyboard::Up)
+    {
+      movePlayerUp = false;
+    }
+    else if (event.key.code == sf::Keyboard::Down)
+    {
+      movePlayerDown = false;
+    }
+  }
+}
+
 int main()
 {
   sf::RenderWindow window{sf::VideoMode{500, 500}, "Pong"};
@@ -267,59 +326,11 @@ int main()
       }
       else if (event.type == sf::Event::KeyPressed)
       {
-        if (playing)
-        {
-          if (event.key.code == sf::Keyboard::Up)
-          {
-            movePlayerUp = true;
-          }
-          else if (event.key.code == sf::Keyboard::Down)
-          {
-            movePlayerDown = true;
-          }
-        }
-        else if (menu)
-        {
-          if (event.key.code == sf::Keyboard::Space)
-          {
-            menu = false;
-            playing = true;
-          }
-        }
-        else if (lose)
-        {
-          if (event.key.code == sf::Keyboard::Space)
-          {
-            lose = false;
-            playing = true;
-
-            resetEntities(ball, player, opponent, window, ballVelocity, playerVelocity, opponentVelocity, movePlayerUp, movePlayerUp);
-          }
-        }
-        else if (win)
-        {
-          if (event.key.code == sf::Keyboard::Space)
-          {
-            win = false;
-            playing = true;
-
-            resetEntities(ball, player, opponent, window, ballVelocity, playerVelocity, opponentVelocity, movePlayerUp, movePlayerUp);
-          }
-        }
+        handleKeyPressEvent(playing, menu, lose, win, event, movePlayerUp, movePlayerDown, ball, player, opponent, window, ballVelocity, playerVelocity, opponentVelocity);
       }
       else if (event.type == sf::Event::KeyReleased)
       {
-        if (playing)
-        {
-          if (event.key.code == sf::Keyboard::Up)
-          {
-            movePlayerUp = false;
-          }
-          else if (event.key.code == sf::Keyboard::Down)
-          {
-            movePlayerDown = false;
-          }
-        }
+        handleKeyReleaseEvent(playing, event, movePlayerUp, movePlayerDown);
       }
     }
 
