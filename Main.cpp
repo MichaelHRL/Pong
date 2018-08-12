@@ -27,6 +27,8 @@ int main()
   opponent.setPosition(window.getSize().x - (10 + opponent.getGlobalBounds().width),  window.getSize().y / 2.f - opponent.getGlobalBounds().height / 2.f);
   opponent.setFillColor(sf::Color::Blue);
   sf::Vector2f opponentVelocity{0.f, 0.f};
+  sf::Vector2f previousOpponentPosition{opponent.getPosition()};
+  sf::Vector2f currentOpponentPosition{opponent.getPosition()};
 
 
   sf::Font font;
@@ -229,7 +231,9 @@ int main()
         ball.move(ballVelocity * timeStep.asSeconds());
         currentBallPosition = ball.getPosition();
 
+        previousOpponentPosition = currentOpponentPosition;
         opponent.move(opponentVelocity * timeStep.asSeconds());
+        currentOpponentPosition = opponent.getPosition();
 
         accumulator -= timeStep;
       }
@@ -260,10 +264,12 @@ int main()
       if (opponent.getGlobalBounds().top < 0)
       {
         opponent.setPosition(opponent.getPosition().x, 0);
+        currentOpponentPosition = opponent.getPosition();
       }
       else if (opponent.getGlobalBounds().top + opponent.getGlobalBounds().height > window.getSize().y)
       {
         opponent.setPosition(opponent.getPosition().x, window.getSize().y - opponent.getGlobalBounds().height);
+        currentOpponentPosition = opponent.getPosition();
       }
 
       // Handle Player-Ball collision
@@ -311,7 +317,10 @@ int main()
       window.draw(player);
       player.setPosition(currentPlayerPosition);
 
+      sf::Vector2f interpolatedOpponentPosition{currentOpponentPosition * alpha + previousOpponentPosition * (1.0f - alpha)};      
+      opponent.setPosition(interpolatedOpponentPosition);
       window.draw(opponent);
+      opponent.setPosition(currentOpponentPosition);
     }
     else if (menu)
     {
