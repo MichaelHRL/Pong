@@ -20,6 +20,8 @@ int main()
   sf::Vector2f playerVelocity{0.f, 0.f};
   bool movePlayerUp{false};
   bool movePlayerDown{false};
+  sf::Vector2f previousPlayerPosition{player.getPosition()};
+  sf::Vector2f currentPlayerPosition{player.getPosition()};
 
   sf::RectangleShape opponent{sf::Vector2f{10.f, 100.f}};
   opponent.setPosition(window.getSize().x - (10 + opponent.getGlobalBounds().width),  window.getSize().y / 2.f - opponent.getGlobalBounds().height / 2.f);
@@ -219,7 +221,9 @@ int main()
 
       while (accumulator >= timeStep)
       {
+        previousPlayerPosition = currentPlayerPosition;
         player.move(playerVelocity * timeStep.asSeconds());
+        currentPlayerPosition = player.getPosition();
 
         previousBallPosition = currentBallPosition;
         ball.move(ballVelocity * timeStep.asSeconds());
@@ -244,10 +248,12 @@ int main()
       if (player.getGlobalBounds().top < 0)
       {
         player.setPosition(player.getPosition().x, 0);
+        currentPlayerPosition = player.getPosition();
       }
       else if (player.getGlobalBounds().top + player.getGlobalBounds().height > window.getSize().y)
       {
         player.setPosition(player.getPosition().x, window.getSize().y - player.getGlobalBounds().height);
+        currentPlayerPosition = player.getPosition();
       }
 
       // Handle Opponent-Wall collision
@@ -300,7 +306,11 @@ int main()
       window.draw(ball);
       ball.setPosition(currentBallPosition);
 
+      sf::Vector2f interpolatedPlayerPosition{currentPlayerPosition * alpha + previousPlayerPosition * (1.0f - alpha)};      
+      player.setPosition(interpolatedPlayerPosition);
       window.draw(player);
+      player.setPosition(currentPlayerPosition);
+
       window.draw(opponent);
     }
     else if (menu)
