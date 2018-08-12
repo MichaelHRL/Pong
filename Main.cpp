@@ -204,6 +204,15 @@ sf::Text createWinText(sf::Font& font)
   return winText;
 }
 
+void drawBall(sf::CircleShape& ball, sf::Vector2f& currentBallPosition, sf::Vector2f& previousBallPosition, sf::Time& accumulator, sf::Time& timeStep, sf::RenderWindow& window)
+{
+  float alpha{accumulator.asSeconds() / timeStep.asSeconds()};
+  sf::Vector2f interpolatedBallPosition{currentBallPosition * alpha + previousBallPosition * (1.0f - alpha)};      
+  ball.setPosition(interpolatedBallPosition);
+  window.draw(ball);
+  ball.setPosition(currentBallPosition);
+}
+
 int main()
 {
   sf::RenderWindow window{sf::VideoMode{500, 500}, "Pong"};
@@ -347,11 +356,7 @@ int main()
 
     if (playing)
     {
-      float alpha{accumulator.asSeconds() / timeStep.asSeconds()};
-      sf::Vector2f interpolatedBallPosition{currentBallPosition * alpha + previousBallPosition * (1.0f - alpha)};      
-      ball.setPosition(interpolatedBallPosition);
-      window.draw(ball);
-      ball.setPosition(currentBallPosition);
+      drawBall(ball, currentBallPosition, previousBallPosition, accumulator, timeStep, window);
 
       window.draw(player);
       window.draw(opponent);
