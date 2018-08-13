@@ -280,6 +280,22 @@ void handleKeyReleaseEvent(bool& playing, sf::Event& event, bool& movePlayerUp, 
   }
 }
 
+void setState(bool& playing, bool& lose, bool& win, sf::CircleShape& ball, sf::RenderWindow& window)
+{
+  if (playing) {
+    if (ball.getGlobalBounds().left < 0)
+    {
+      lose = true;
+      playing = false;
+    }
+    else if (ball.getGlobalBounds().left + ball.getGlobalBounds().width > window.getSize().x)
+    {
+      win = true;
+      playing = false;
+    }
+  }
+}
+
 int main()
 {
   sf::RenderWindow window{sf::VideoMode{500, 500}, "Pong"};
@@ -346,19 +362,7 @@ int main()
       }
     }
 
-    // Set states
-    if (playing) {
-      if (ball.getGlobalBounds().left < 0)
-      {
-        lose = true;
-        playing = false;
-      }
-      else if (ball.getGlobalBounds().left + ball.getGlobalBounds().width > window.getSize().x)
-      {
-        win = true;
-        playing = false;
-      }
-    }
+    setState(playing, lose, win, ball, window);
 
     if (playing)
     {
