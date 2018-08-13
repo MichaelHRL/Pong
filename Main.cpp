@@ -221,6 +221,25 @@ void drawBall(sf::CircleShape& ball, sf::Vector2f& currentBallPosition, sf::Vect
   ball.setPosition(currentBallPosition);
 }
 
+void drawPlayer(sf::RectangleShape& player, sf::Vector2f& currentPlayerPosition, sf::Vector2f& previousPlayerPosition, sf::Time& accumulator, sf::Time& timeStep, sf::RenderWindow& window)
+{
+
+  float alpha{accumulator.asSeconds() / timeStep.asSeconds()};
+  sf::Vector2f interpolatedPlayerPosition{currentPlayerPosition * alpha + previousPlayerPosition * (1.0f - alpha)};      
+  player.setPosition(interpolatedPlayerPosition);
+  window.draw(player);
+  player.setPosition(currentPlayerPosition);
+}
+
+void drawOpponent(sf::RectangleShape& opponent, sf::Vector2f& currentOpponentPosition, sf::Vector2f& previousOpponentPosition, sf::Time& accumulator, sf::Time& timeStep, sf::RenderWindow& window)
+{
+  float alpha{accumulator.asSeconds() / timeStep.asSeconds()};
+  sf::Vector2f interpolatedOpponentPosition{currentOpponentPosition * alpha + previousOpponentPosition * (1.0f - alpha)};      
+  opponent.setPosition(interpolatedOpponentPosition);
+  window.draw(opponent);
+  opponent.setPosition(currentOpponentPosition);
+}
+
 
 void handleKeyPressEvent(bool& playing, bool& menu, bool& lose, bool& win, sf::Event& event, bool& movePlayerUp, bool& movePlayerDown, sf::CircleShape& ball, sf::RectangleShape& player, sf::RectangleShape& opponent, sf::RenderWindow& window, sf::Vector2f& ballVelocity, sf::Vector2f& playerVelocity, sf::Vector2f& opponentVelocity)
 {
@@ -384,18 +403,8 @@ int main()
     if (playing)
     {
       drawBall(ball, currentBallPosition, previousBallPosition, accumulator, timeStep, window);
-
-      float alpha{accumulator.asSeconds() / timeStep.asSeconds()};
-
-      sf::Vector2f interpolatedPlayerPosition{currentPlayerPosition * alpha + previousPlayerPosition * (1.0f - alpha)};      
-      player.setPosition(interpolatedPlayerPosition);
-      window.draw(player);
-      player.setPosition(currentPlayerPosition);
-
-      sf::Vector2f interpolatedOpponentPosition{currentOpponentPosition * alpha + previousOpponentPosition * (1.0f - alpha)};      
-      opponent.setPosition(interpolatedOpponentPosition);
-      window.draw(opponent);
-      opponent.setPosition(currentOpponentPosition);
+      drawPlayer(player, currentPlayerPosition, previousPlayerPosition, accumulator, timeStep, window);
+      drawOpponent(opponent, currentOpponentPosition, previousOpponentPosition, accumulator, timeStep, window);
     }
     else if (menu)
     {
