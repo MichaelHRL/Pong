@@ -44,7 +44,26 @@ public:
   sf::Vector2f currentPlayerPosition;
 };
 
-void resetEntities(Ball& ball, Player& player, sf::RectangleShape& opponent, sf::RenderWindow& window, sf::Vector2f& opponentVelocity)
+sf::RectangleShape createOpponent(sf::RenderWindow& window);
+
+class Opponent
+{
+public:
+  Opponent(sf::RenderWindow& window)
+    : opponent{createOpponent(window)}
+    , opponentVelocity{0.f, 0.f}
+    , previousOpponentPosition{opponent.getPosition()}
+    , currentOpponentPosition{opponent.getPosition()}
+  {
+  }
+
+  sf::RectangleShape opponent;
+  sf::Vector2f opponentVelocity;
+  sf::Vector2f previousOpponentPosition;
+  sf::Vector2f currentOpponentPosition;
+};
+
+void resetEntities(Ball& ball, Player& player, Opponent& opponent, sf::RenderWindow& window)
 {
   ball.ball.setPosition(window.getSize().x / 2.f, window.getSize().y / 2.f);
   ball.ballVelocity.x = 424.f;
@@ -56,31 +75,31 @@ void resetEntities(Ball& ball, Player& player, sf::RectangleShape& opponent, sf:
   player.movePlayerUp = false;
   player.movePlayerDown = false;
   
-  opponent.setPosition(window.getSize().x - (10 + opponent.getGlobalBounds().width),  window.getSize().y / 2.f - opponent.getGlobalBounds().height / 2.f);
-  opponentVelocity.x = 0.f;
-  opponentVelocity.y = 0.f;
+  opponent.opponent.setPosition(window.getSize().x - (10 + opponent.opponent.getGlobalBounds().width),  window.getSize().y / 2.f - opponent.opponent.getGlobalBounds().height / 2.f);
+  opponent.opponentVelocity.x = 0.f;
+  opponent.opponentVelocity.y = 0.f;
 }
 
-void setOpponentVelocity(Ball& ball, sf::RectangleShape& opponent, sf::RenderWindow& window, sf::Vector2f& opponentVelocity)
+void setOpponentVelocity(Ball& ball, Opponent& opponent, sf::RenderWindow& window)
 {
   if (ball.ball.getGlobalBounds().left > window.getSize().x / 2.f && ball.ballVelocity.x > 0)
   {
-    if (ball.ball.getPosition().y < opponent.getGlobalBounds().top + opponent.getGlobalBounds().height / 2)
+    if (ball.ball.getPosition().y < opponent.opponent.getGlobalBounds().top + opponent.opponent.getGlobalBounds().height / 2)
     {
-      opponentVelocity.y = -300.f;
+      opponent.opponentVelocity.y = -300.f;
     }
-    else if (ball.ball.getPosition().y > opponent.getGlobalBounds().top + opponent.getGlobalBounds().height / 2)
+    else if (ball.ball.getPosition().y > opponent.opponent.getGlobalBounds().top + opponent.opponent.getGlobalBounds().height / 2)
     {
-      opponentVelocity.y = 300.f;
+      opponent.opponentVelocity.y = 300.f;
     }
     else
     {
-      opponentVelocity.y = 0.f;
+      opponent.opponentVelocity.y = 0.f;
     }
   }
   else
   {
-    opponentVelocity.y = 0.f;
+    opponent.opponentVelocity.y = 0.f;
   }
 }
 
@@ -100,7 +119,7 @@ void setPlayerVelocity(Player& player)
   }
 }
 
-void moveEntities(sf::Clock& clock, sf::Time& accumulator, sf::Time& timeStep, Player& player, sf::RectangleShape& opponent, Ball& ball, sf::Vector2f& opponentVelocity, sf::Vector2f& previousOpponentPosition, sf::Vector2f& currentOpponentPosition)
+void moveEntities(sf::Clock& clock, sf::Time& accumulator, sf::Time& timeStep, Player& player, Opponent& opponent, Ball& ball)
 {
   sf::Time frameTime{clock.restart()};
   if (frameTime.asSeconds() > 0.1f)
@@ -119,9 +138,9 @@ void moveEntities(sf::Clock& clock, sf::Time& accumulator, sf::Time& timeStep, P
     ball.ball.move(ball.ballVelocity * timeStep.asSeconds());
     ball.currentBallPosition = ball.ball.getPosition();
 
-    previousOpponentPosition = currentOpponentPosition;
-    opponent.move(opponentVelocity * timeStep.asSeconds());
-    currentOpponentPosition = opponent.getPosition();
+    opponent.previousOpponentPosition = opponent.currentOpponentPosition;
+    opponent.opponent.move(opponent.opponentVelocity * timeStep.asSeconds());
+    opponent.currentOpponentPosition = opponent.opponent.getPosition();
 
     accumulator -= timeStep;
   }
@@ -153,17 +172,17 @@ void handlePlayerWallCollision(Player& player, sf::RenderWindow& window)
   }
 }
 
-void handleOpponentWallCollision(sf::RectangleShape& opponent, sf::RenderWindow& window, sf::Vector2f& currentOpponentPosition)
+void handleOpponentWallCollision(Opponent& opponent, sf::RenderWindow& window)
 {
-  if (opponent.getGlobalBounds().top < 0)
+  if (opponent.opponent.getGlobalBounds().top < 0)
   {
-    opponent.setPosition(opponent.getPosition().x, 0);
-    currentOpponentPosition = opponent.getPosition();
+    opponent.opponent.setPosition(opponent.opponent.getPosition().x, 0);
+    opponent.currentOpponentPosition = opponent.opponent.getPosition();
   }
-  else if (opponent.getGlobalBounds().top + opponent.getGlobalBounds().height > window.getSize().y)
+  else if (opponent.opponent.getGlobalBounds().top + opponent.opponent.getGlobalBounds().height > window.getSize().y)
   {
-    opponent.setPosition(opponent.getPosition().x, window.getSize().y - opponent.getGlobalBounds().height);
-    currentOpponentPosition = opponent.getPosition();
+    opponent.opponent.setPosition(opponent.opponent.getPosition().x, window.getSize().y - opponent.opponent.getGlobalBounds().height);
+    opponent.currentOpponentPosition = opponent.opponent.getPosition();
   }
 }
 
@@ -183,15 +202,15 @@ void handlePlayerBallCollision(Player& player, Ball& ball)
   }
 }
 
-void handleOpponentBallCollision(sf::RectangleShape& opponent, Ball& ball)
+void handleOpponentBallCollision(Opponent& opponent, Ball& ball)
 {
-  if (opponent.getGlobalBounds().intersects(ball.ball.getGlobalBounds()) && ball.ballVelocity.x > 0)
+  if (opponent.opponent.getGlobalBounds().intersects(ball.ball.getGlobalBounds()) && ball.ballVelocity.x > 0)
   {
-    sf::Vector2f contactPoint{opponent.getGlobalBounds().left, ball.ball.getPosition().y};
-    sf::Vector2f translatedContactPoint{contactPoint.x - opponent.getGlobalBounds().left, contactPoint.y - opponent.getGlobalBounds().top};
+    sf::Vector2f contactPoint{opponent.opponent.getGlobalBounds().left, ball.ball.getPosition().y};
+    sf::Vector2f translatedContactPoint{contactPoint.x - opponent.opponent.getGlobalBounds().left, contactPoint.y - opponent.opponent.getGlobalBounds().top};
     
     float maxAngle{50};
-    float alpha{maxAngle * (translatedContactPoint.y / (opponent.getGlobalBounds().height / 2) - 1)};
+    float alpha{maxAngle * (translatedContactPoint.y / (opponent.opponent.getGlobalBounds().height / 2) - 1)};
     double magnitude{std::sqrt(std::pow(ball.ballVelocity.x, 2) + std::pow(ball.ballVelocity.y, 2))};
     constexpr float pi{3.14159265359};
     ball.ballVelocity.x = magnitude * std::cos(alpha * (pi / 180)) * -1;
@@ -273,17 +292,17 @@ void drawPlayer(Player& player, sf::Time& accumulator, sf::Time& timeStep, sf::R
   player.player.setPosition(player.currentPlayerPosition);
 }
 
-void drawOpponent(sf::RectangleShape& opponent, sf::Vector2f& currentOpponentPosition, sf::Vector2f& previousOpponentPosition, sf::Time& accumulator, sf::Time& timeStep, sf::RenderWindow& window)
+void drawOpponent(Opponent& opponent, sf::Time& accumulator, sf::Time& timeStep, sf::RenderWindow& window)
 {
   float alpha{accumulator.asSeconds() / timeStep.asSeconds()};
-  sf::Vector2f interpolatedOpponentPosition{currentOpponentPosition * alpha + previousOpponentPosition * (1.0f - alpha)};      
-  opponent.setPosition(interpolatedOpponentPosition);
-  window.draw(opponent);
-  opponent.setPosition(currentOpponentPosition);
+  sf::Vector2f interpolatedOpponentPosition{opponent.currentOpponentPosition * alpha + opponent.previousOpponentPosition * (1.0f - alpha)};      
+  opponent.opponent.setPosition(interpolatedOpponentPosition);
+  window.draw(opponent.opponent);
+  opponent.opponent.setPosition(opponent.currentOpponentPosition);
 }
 
 
-void handleKeyPressEvent(bool& playing, bool& menu, bool& lose, bool& win, sf::Event& event, Ball& ball, Player& player, sf::RectangleShape& opponent, sf::RenderWindow& window, sf::Vector2f& opponentVelocity)
+void handleKeyPressEvent(bool& playing, bool& menu, bool& lose, bool& win, sf::Event& event, Ball& ball, Player& player, Opponent& opponent, sf::RenderWindow& window)
 {
   if (playing)
   {
@@ -311,7 +330,7 @@ void handleKeyPressEvent(bool& playing, bool& menu, bool& lose, bool& win, sf::E
       lose = false;
       playing = true;
 
-      resetEntities(ball, player, opponent, window, opponentVelocity);
+      resetEntities(ball, player, opponent, window);
     }
   }
   else if (win)
@@ -321,7 +340,7 @@ void handleKeyPressEvent(bool& playing, bool& menu, bool& lose, bool& win, sf::E
       win = false;
       playing = true;
 
-      resetEntities(ball, player, opponent, window, opponentVelocity);
+      resetEntities(ball, player, opponent, window);
     }
   }
 }
@@ -357,20 +376,13 @@ void setState(bool& playing, bool& lose, bool& win, Ball& ball, sf::RenderWindow
   }
 }
 
-
-
 int main()
 {
   sf::RenderWindow window{sf::VideoMode{500, 500}, "Pong"};
 
   Ball ball{window};
-  
   Player player{window};
-
-  sf::RectangleShape opponent{createOpponent(window)};
-  sf::Vector2f opponentVelocity{0.f, 0.f};
-  sf::Vector2f previousOpponentPosition{opponent.getPosition()};
-  sf::Vector2f currentOpponentPosition{opponent.getPosition()};
+  Opponent opponent{window};
 
 
   sf::Font font;
@@ -409,7 +421,7 @@ int main()
       }
       else if (event.type == sf::Event::KeyPressed)
       {
-        handleKeyPressEvent(playing, menu, lose, win, event, ball, player, opponent, window, opponentVelocity);
+        handleKeyPressEvent(playing, menu, lose, win, event, ball, player, opponent, window);
       }
       else if (event.type == sf::Event::KeyReleased)
       {
@@ -421,14 +433,14 @@ int main()
 
     if (playing)
     {
-      setOpponentVelocity(ball, opponent, window, opponentVelocity);
+      setOpponentVelocity(ball, opponent, window);
       setPlayerVelocity(player);
 
-      moveEntities(clock, accumulator, timeStep, player, opponent, ball, opponentVelocity, previousOpponentPosition, currentOpponentPosition);     
+      moveEntities(clock, accumulator, timeStep, player, opponent, ball);     
 
       handleBallWallCollision(ball, window);
       handlePlayerWallCollision(player, window);
-      handleOpponentWallCollision(opponent, window, currentOpponentPosition);
+      handleOpponentWallCollision(opponent, window);
 
       handlePlayerBallCollision(player, ball);
       handleOpponentBallCollision(opponent, ball);
@@ -440,7 +452,7 @@ int main()
     {
       drawBall(ball, accumulator, timeStep, window);
       drawPlayer(player, accumulator, timeStep, window);
-      drawOpponent(opponent, currentOpponentPosition, previousOpponentPosition, accumulator, timeStep, window);
+      drawOpponent(opponent, accumulator, timeStep, window);
     }
     else if (menu)
     {
