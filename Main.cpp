@@ -42,6 +42,22 @@ public:
   bool movePlayerDown;
   sf::Vector2f previousPlayerPosition;
   sf::Vector2f currentPlayerPosition;
+
+  void setVelocity()
+  {
+    if (movePlayerUp)
+    {
+      playerVelocity.y = -300.f;
+    }
+    else if (movePlayerDown)
+    {
+      playerVelocity.y = 300.f;
+    }
+    else
+    {
+      playerVelocity.y = 0.f;
+    }
+  }
 };
 
 sf::RectangleShape createOpponent(sf::RenderWindow& window);
@@ -61,6 +77,29 @@ public:
   sf::Vector2f opponentVelocity;
   sf::Vector2f previousOpponentPosition;
   sf::Vector2f currentOpponentPosition;
+
+  void setVelocity(Ball& ball, sf::RenderWindow& window)
+  {
+    if (ball.ball.getGlobalBounds().left > window.getSize().x / 2.f && ball.ballVelocity.x > 0)
+    {
+      if (ball.ball.getPosition().y < opponent.getGlobalBounds().top + opponent.getGlobalBounds().height / 2)
+      {
+        opponentVelocity.y = -300.f;
+      }
+      else if (ball.ball.getPosition().y > opponent.getGlobalBounds().top + opponent.getGlobalBounds().height / 2)
+      {
+        opponentVelocity.y = 300.f;
+      }
+      else
+      {
+        opponentVelocity.y = 0.f;
+      }
+    }
+    else
+    {
+      opponentVelocity.y = 0.f;
+    }
+  }
 };
 
 class GameStates
@@ -95,45 +134,6 @@ void resetEntities(Ball& ball, Player& player, Opponent& opponent, sf::RenderWin
   opponent.opponent.setPosition(window.getSize().x - (10 + opponent.opponent.getGlobalBounds().width),  window.getSize().y / 2.f - opponent.opponent.getGlobalBounds().height / 2.f);
   opponent.opponentVelocity.x = 0.f;
   opponent.opponentVelocity.y = 0.f;
-}
-
-void setOpponentVelocity(Ball& ball, Opponent& opponent, sf::RenderWindow& window)
-{
-  if (ball.ball.getGlobalBounds().left > window.getSize().x / 2.f && ball.ballVelocity.x > 0)
-  {
-    if (ball.ball.getPosition().y < opponent.opponent.getGlobalBounds().top + opponent.opponent.getGlobalBounds().height / 2)
-    {
-      opponent.opponentVelocity.y = -300.f;
-    }
-    else if (ball.ball.getPosition().y > opponent.opponent.getGlobalBounds().top + opponent.opponent.getGlobalBounds().height / 2)
-    {
-      opponent.opponentVelocity.y = 300.f;
-    }
-    else
-    {
-      opponent.opponentVelocity.y = 0.f;
-    }
-  }
-  else
-  {
-    opponent.opponentVelocity.y = 0.f;
-  }
-}
-
-void setPlayerVelocity(Player& player)
-{
-  if (player.movePlayerUp)
-  {
-    player.playerVelocity.y = -300.f;
-  }
-  else if (player.movePlayerDown)
-  {
-    player.playerVelocity.y = 300.f;
-  }
-  else
-  {
-    player.playerVelocity.y = 0.f;
-  }
 }
 
 void moveEntities(sf::Clock& clock, sf::Time& accumulator, sf::Time& timeStep, Player& player, Opponent& opponent, Ball& ball)
@@ -452,8 +452,8 @@ int main()
 
     if (gameStates.playing)
     {
-      setOpponentVelocity(ball, opponent, window);
-      setPlayerVelocity(player);
+      opponent.setVelocity(ball, window);
+      player.setVelocity();
 
       moveEntities(clock, accumulator, timeStep, player, opponent, ball);     
 
