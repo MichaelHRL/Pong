@@ -63,6 +63,23 @@ public:
   sf::Vector2f currentOpponentPosition;
 };
 
+class GameStates
+{
+public:
+  GameStates(bool menu, bool playing, bool lose, bool win)
+    : menu{menu}
+    , playing{playing}
+    , lose{lose}
+    , win{win}
+  {
+  }
+
+  bool menu{true};
+  bool playing{false};
+  bool lose{false};
+  bool win{false};
+};
+
 void resetEntities(Ball& ball, Player& player, Opponent& opponent, sf::RenderWindow& window)
 {
   ball.ball.setPosition(window.getSize().x / 2.f, window.getSize().y / 2.f);
@@ -284,7 +301,6 @@ void drawBall(Ball& ball, sf::Time& accumulator, sf::Time& timeStep, sf::RenderW
 
 void drawPlayer(Player& player, sf::Time& accumulator, sf::Time& timeStep, sf::RenderWindow& window)
 {
-
   float alpha{accumulator.asSeconds() / timeStep.asSeconds()};
   sf::Vector2f interpolatedPlayerPosition{player.currentPlayerPosition * alpha + player.previousPlayerPosition * (1.0f - alpha)};      
   player.player.setPosition(interpolatedPlayerPosition);
@@ -302,9 +318,9 @@ void drawOpponent(Opponent& opponent, sf::Time& accumulator, sf::Time& timeStep,
 }
 
 
-void handleKeyPressEvent(bool& playing, bool& menu, bool& lose, bool& win, sf::Event& event, Ball& ball, Player& player, Opponent& opponent, sf::RenderWindow& window)
+void handleKeyPressEvent(GameStates& gameStates, sf::Event& event, Ball& ball, Player& player, Opponent& opponent, sf::RenderWindow& window)
 {
-  if (playing)
+  if (gameStates.playing)
   {
     if (event.key.code == sf::Keyboard::Up)
     {
@@ -315,39 +331,39 @@ void handleKeyPressEvent(bool& playing, bool& menu, bool& lose, bool& win, sf::E
       player.movePlayerDown = true;
     }
   }
-  else if (menu)
+  else if (gameStates.menu)
   {
     if (event.key.code == sf::Keyboard::Space)
     {
-      menu = false;
-      playing = true;
+      gameStates.menu = false;
+      gameStates.playing = true;
     }
   }
-  else if (lose)
+  else if (gameStates.lose)
   {
     if (event.key.code == sf::Keyboard::Space)
     {
-      lose = false;
-      playing = true;
+      gameStates.lose = false;
+      gameStates.playing = true;
 
       resetEntities(ball, player, opponent, window);
     }
   }
-  else if (win)
+  else if (gameStates.win)
   {
     if (event.key.code == sf::Keyboard::Space)
     {
-      win = false;
-      playing = true;
+      gameStates.win = false;
+      gameStates.playing = true;
 
       resetEntities(ball, player, opponent, window);
     }
   }
 }
 
-void handleKeyReleaseEvent(bool& playing, sf::Event& event, Player& player)
+void handleKeyReleaseEvent(GameStates& gameStates, sf::Event& event, Player& player)
 {
-  if (playing)
+  if (gameStates.playing)
   {
     if (event.key.code == sf::Keyboard::Up)
     {
@@ -360,18 +376,18 @@ void handleKeyReleaseEvent(bool& playing, sf::Event& event, Player& player)
   }
 }
 
-void setState(bool& playing, bool& lose, bool& win, Ball& ball, sf::RenderWindow& window)
+void setState(GameStates& gameStates, Ball& ball, sf::RenderWindow& window)
 {
-  if (playing) {
+  if (gameStates.playing) {
     if (ball.ball.getGlobalBounds().left < 0)
     {
-      lose = true;
-      playing = false;
+      gameStates.lose = true;
+      gameStates.playing = false;
     }
     else if (ball.ball.getGlobalBounds().left + ball.ball.getGlobalBounds().width > window.getSize().x)
     {
-      win = true;
-      playing = false;
+      gameStates.win = true;
+      gameStates.playing = false;
     }
   }
 }
@@ -396,12 +412,7 @@ int main()
   sf::Text loseText{createLoseText(font)};
   sf::Text winText{createWinText(font)};
 
-
-  bool menu{true};
-  bool playing{false};
-  bool lose{false};
-  bool win{false};
-
+  GameStates gameStates{true, false, false, false};
 
   sf::Clock clock{};
   sf::Time accumulator{};
@@ -421,17 +432,17 @@ int main()
       }
       else if (event.type == sf::Event::KeyPressed)
       {
-        handleKeyPressEvent(playing, menu, lose, win, event, ball, player, opponent, window);
+        handleKeyPressEvent(gameStates, event, ball, player, opponent, window);
       }
       else if (event.type == sf::Event::KeyReleased)
       {
-        handleKeyReleaseEvent(playing, event, player);
+        handleKeyReleaseEvent(gameStates, event, player);
       }
     }
 
-    setState(playing, lose, win, ball, window);
+    setState(gameStates, ball, window);
 
-    if (playing)
+    if (gameStates.playing)
     {
       setOpponentVelocity(ball, opponent, window);
       setPlayerVelocity(player);
@@ -448,21 +459,21 @@ int main()
 
     window.clear();
 
-    if (playing)
+    if (gameStates.playing)
     {
       drawBall(ball, accumulator, timeStep, window);
       drawPlayer(player, accumulator, timeStep, window);
       drawOpponent(opponent, accumulator, timeStep, window);
     }
-    else if (menu)
+    else if (gameStates.menu)
     {
       window.draw(menuText);
     }
-    else if (lose)
+    else if (gameStates.lose)
     {
       window.draw(loseText);
     }
-    else if (win)
+    else if (gameStates.win)
     {
       window.draw(winText);
     }
