@@ -264,7 +264,7 @@ sf::Text createMenuText(sf::Font& font)
 {
   sf::Text menuText;
   menuText.setFont(font);
-  menuText.setString("Press space to play.");
+  menuText.setString("Press space to play.\nUse up and down to move.");
   menuText.setFillColor(sf::Color::White);
   menuText.setCharacterSize(32);
   return menuText;
@@ -274,7 +274,7 @@ sf::Text createLoseText(sf::Font& font)
 {
   sf::Text loseText;
   loseText.setFont(font);
-  loseText.setString("You lose!\nPress space to play again.");
+  loseText.setString("You lose!\nPress space to play again.\nPress escape to exit.");
   loseText.setFillColor(sf::Color::White);
   loseText.setCharacterSize(32);
   return loseText;
@@ -284,7 +284,7 @@ sf::Text createWinText(sf::Font& font)
 {
   sf::Text winText;
   winText.setFont(font);
-  winText.setString("You win!\nPress space to play again.");
+  winText.setString("You win!\nPress space to play again.\nPress escape to exit.");
   winText.setFillColor(sf::Color::White);
   winText.setCharacterSize(32);
   return winText;
@@ -348,6 +348,10 @@ void handleKeyPressEvent(GameStates& gameStates, sf::Event& event, Ball& ball, P
 
       resetEntities(ball, player, opponent, window);
     }
+    else if (event.key.code == sf::Keyboard::Escape)
+    {
+      window.close();
+    }
   }
   else if (gameStates.win)
   {
@@ -357,6 +361,10 @@ void handleKeyPressEvent(GameStates& gameStates, sf::Event& event, Ball& ball, P
       gameStates.playing = true;
 
       resetEntities(ball, player, opponent, window);
+    }
+    else if (event.key.code == sf::Keyboard::Escape)
+    {
+      window.close();
     }
   }
 }
