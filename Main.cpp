@@ -19,6 +19,18 @@ public:
   sf::Vector2f ballVelocity;
   sf::Vector2f previousBallPosition;
   sf::Vector2f currentBallPosition;
+
+  void handleWallCollision(sf::RenderWindow& window)
+  {
+    if (ball.getGlobalBounds().left < 0 && ballVelocity.x < 0 || ball.getGlobalBounds().left + ball.getGlobalBounds().width > window.getSize().x && ballVelocity.x > 0)
+    {
+      ballVelocity.x *= -1;
+    }
+    if (ball.getGlobalBounds().top < 0 && ballVelocity.y < 0 || ball.getGlobalBounds().top + ball.getGlobalBounds().height > window.getSize().y && ballVelocity.y > 0)
+    {
+      ballVelocity.y *= -1;
+    }
+  }
 };
 
 sf::RectangleShape createPlayer(sf::RenderWindow& window);
@@ -56,6 +68,20 @@ public:
     else
     {
       playerVelocity.y = 0.f;
+    }
+  }
+
+  void handleWallCollision(sf::RenderWindow& window)
+  {
+    if (player.getGlobalBounds().top < 0)
+    {
+      player.setPosition(player.getPosition().x, 0);
+      currentPlayerPosition = player.getPosition();
+    }
+    else if (player.getGlobalBounds().top + player.getGlobalBounds().height > window.getSize().y)
+    {
+      player.setPosition(player.getPosition().x, window.getSize().y - player.getGlobalBounds().height);
+      currentPlayerPosition = player.getPosition();
     }
   }
 };
@@ -98,6 +124,20 @@ public:
     else
     {
       opponentVelocity.y = 0.f;
+    }
+  }
+
+  void handleWallCollision(sf::RenderWindow& window)
+  {
+    if (opponent.getGlobalBounds().top < 0)
+    {
+      opponent.setPosition(opponent.getPosition().x, 0);
+      currentOpponentPosition = opponent.getPosition();
+    }
+    else if (opponent.getGlobalBounds().top + opponent.getGlobalBounds().height > window.getSize().y)
+    {
+      opponent.setPosition(opponent.getPosition().x, window.getSize().y - opponent.getGlobalBounds().height);
+      currentOpponentPosition = opponent.getPosition();
     }
   }
 };
@@ -163,45 +203,6 @@ void moveEntities(sf::Clock& clock, sf::Time& accumulator, sf::Time& timeStep, P
   }
 }
 
-void handleBallWallCollision(Ball& ball, sf::RenderWindow& window)
-{
-  if (ball.ball.getGlobalBounds().left < 0 && ball.ballVelocity.x < 0 || ball.ball.getGlobalBounds().left + ball.ball.getGlobalBounds().width > window.getSize().x && ball.ballVelocity.x > 0)
-  {
-    ball.ballVelocity.x *= -1;
-  }
-  if (ball.ball.getGlobalBounds().top < 0 && ball.ballVelocity.y < 0 || ball.ball.getGlobalBounds().top + ball.ball.getGlobalBounds().height > window.getSize().y && ball.ballVelocity.y > 0)
-  {
-    ball.ballVelocity.y *= -1;
-  }
-}
-
-void handlePlayerWallCollision(Player& player, sf::RenderWindow& window)
-{
-  if (player.player.getGlobalBounds().top < 0)
-  {
-    player.player.setPosition(player.player.getPosition().x, 0);
-    player.currentPlayerPosition = player.player.getPosition();
-  }
-  else if (player.player.getGlobalBounds().top + player.player.getGlobalBounds().height > window.getSize().y)
-  {
-    player.player.setPosition(player.player.getPosition().x, window.getSize().y - player.player.getGlobalBounds().height);
-    player.currentPlayerPosition = player.player.getPosition();
-  }
-}
-
-void handleOpponentWallCollision(Opponent& opponent, sf::RenderWindow& window)
-{
-  if (opponent.opponent.getGlobalBounds().top < 0)
-  {
-    opponent.opponent.setPosition(opponent.opponent.getPosition().x, 0);
-    opponent.currentOpponentPosition = opponent.opponent.getPosition();
-  }
-  else if (opponent.opponent.getGlobalBounds().top + opponent.opponent.getGlobalBounds().height > window.getSize().y)
-  {
-    opponent.opponent.setPosition(opponent.opponent.getPosition().x, window.getSize().y - opponent.opponent.getGlobalBounds().height);
-    opponent.currentOpponentPosition = opponent.opponent.getPosition();
-  }
-}
 
 void handlePlayerBallCollision(Player& player, Ball& ball)
 {
@@ -457,9 +458,9 @@ int main()
 
       moveEntities(clock, accumulator, timeStep, player, opponent, ball);     
 
-      handleBallWallCollision(ball, window);
-      handlePlayerWallCollision(player, window);
-      handleOpponentWallCollision(opponent, window);
+      ball.handleWallCollision(window);
+      player.handleWallCollision(window);
+      opponent.handleWallCollision(window);
 
       handlePlayerBallCollision(player, ball);
       handleOpponentBallCollision(opponent, ball);
