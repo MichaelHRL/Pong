@@ -20,13 +20,34 @@ public:
   sf::Vector2f previousBallPosition;
   sf::Vector2f currentBallPosition;
 
+  bool isPenetratingIntoLeftWall(sf::RenderWindow& window)
+  {
+    // The check for ballVelocity is neccessary because it ensures that the ball doesn't stay trapped within a surface
+    return ball.getGlobalBounds().left < 0 && ballVelocity.x < 0;
+  }
+
+  bool isPenetratingIntoRightWall(sf::RenderWindow& window)
+  {
+    return ball.getGlobalBounds().left + ball.getGlobalBounds().width > window.getSize().x && ballVelocity.x > 0;
+  }
+
+  bool isPenetratingIntoTopWall(sf::RenderWindow& window)
+  {
+    return ball.getGlobalBounds().top < 0 && ballVelocity.y < 0;
+  }
+
+  bool isPenetratingIntoBottomWall(sf::RenderWindow& window)
+  {
+    return ball.getGlobalBounds().top + ball.getGlobalBounds().height > window.getSize().y && ballVelocity.y > 0;
+  }
+
   void handleWallCollision(sf::RenderWindow& window)
   {
-    if (ball.getGlobalBounds().left < 0 && ballVelocity.x < 0 || ball.getGlobalBounds().left + ball.getGlobalBounds().width > window.getSize().x && ballVelocity.x > 0)
+    if (isPenetratingIntoLeftWall(window) || isPenetratingIntoRightWall(window))
     {
       ballVelocity.x *= -1;
     }
-    if (ball.getGlobalBounds().top < 0 && ballVelocity.y < 0 || ball.getGlobalBounds().top + ball.getGlobalBounds().height > window.getSize().y && ballVelocity.y > 0)
+    if (isPenetratingIntoTopWall(window) || isPenetratingIntoBottomWall(window))
     {
       ballVelocity.y *= -1;
     }
