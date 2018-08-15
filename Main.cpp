@@ -92,14 +92,24 @@ public:
     }
   }
 
+  bool isPenetratingTopWall(sf::RenderWindow& window)
+  {
+    return player.getGlobalBounds().top < 0;
+  }
+
+  bool isPenetratingBottomWall(sf::RenderWindow& window)
+  {
+    return player.getGlobalBounds().top + player.getGlobalBounds().height > window.getSize().y;
+  }
+
   void handleWallCollision(sf::RenderWindow& window)
   {
-    if (player.getGlobalBounds().top < 0)
+    if (isPenetratingTopWall(window))
     {
       player.setPosition(player.getPosition().x, 0);
       currentPlayerPosition = player.getPosition();
     }
-    else if (player.getGlobalBounds().top + player.getGlobalBounds().height > window.getSize().y)
+    else if (isPenetratingBottomWall(window))
     {
       player.setPosition(player.getPosition().x, window.getSize().y - player.getGlobalBounds().height);
       currentPlayerPosition = player.getPosition();
