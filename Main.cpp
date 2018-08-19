@@ -9,64 +9,64 @@ class Ball
 public:
   Ball(sf::RenderWindow& window)
     : ball{createBall(window)}
-    , ballVelocity{424.f, 0.f}
-    , previousBallPosition{ball.getPosition()}
-    , currentBallPosition{ball.getPosition()}
+    , velocity{424.f, 0.f}
+    , previousPosition{ball.getPosition()}
+    , currentPosition{ball.getPosition()}
   {
   }
 
   sf::CircleShape ball;
-  sf::Vector2f ballVelocity;
-  sf::Vector2f previousBallPosition;
-  sf::Vector2f currentBallPosition;
+  sf::Vector2f velocity;
+  sf::Vector2f previousPosition;
+  sf::Vector2f currentPosition;
 
   bool isPenetratingIntoLeftWall(sf::RenderWindow& window)
   {
-    // The check for ballVelocity is neccessary because it ensures that the ball doesn't stay trapped within a surface
-    return ball.getGlobalBounds().left < 0 && ballVelocity.x < 0;
+    // The check for velocity is neccessary because it ensures that the ball doesn't stay trapped within a surface
+    return ball.getGlobalBounds().left < 0 && velocity.x < 0;
   }
 
   bool isPenetratingIntoRightWall(sf::RenderWindow& window)
   {
-    return ball.getGlobalBounds().left + ball.getGlobalBounds().width > window.getSize().x && ballVelocity.x > 0;
+    return ball.getGlobalBounds().left + ball.getGlobalBounds().width > window.getSize().x && velocity.x > 0;
   }
 
   bool isPenetratingIntoTopWall(sf::RenderWindow& window)
   {
-    return ball.getGlobalBounds().top < 0 && ballVelocity.y < 0;
+    return ball.getGlobalBounds().top < 0 && velocity.y < 0;
   }
 
   bool isPenetratingIntoBottomWall(sf::RenderWindow& window)
   {
-    return ball.getGlobalBounds().top + ball.getGlobalBounds().height > window.getSize().y && ballVelocity.y > 0;
+    return ball.getGlobalBounds().top + ball.getGlobalBounds().height > window.getSize().y && velocity.y > 0;
   }
 
   void handleWallCollision(sf::RenderWindow& window)
   {
     if (isPenetratingIntoLeftWall(window) || isPenetratingIntoRightWall(window))
     {
-      ballVelocity.x *= -1;
+      velocity.x *= -1;
     }
     if (isPenetratingIntoTopWall(window) || isPenetratingIntoBottomWall(window))
     {
-      ballVelocity.y *= -1;
+      velocity.y *= -1;
     }
   }
 
   void draw(sf::Time& accumulator, sf::Time& timeStep, sf::RenderWindow& window)
   {
     float alpha{accumulator.asSeconds() / timeStep.asSeconds()};
-    sf::Vector2f interpolatedBallPosition{currentBallPosition * alpha + previousBallPosition * (1.0f - alpha)};      
+    sf::Vector2f interpolatedBallPosition{currentPosition * alpha + previousPosition * (1.0f - alpha)};      
     ball.setPosition(interpolatedBallPosition);
     window.draw(ball);
-    ball.setPosition(currentBallPosition);
+    ball.setPosition(currentPosition);
   }
 
   void move(sf::Time timeStep)
   {
-    previousBallPosition = currentBallPosition;
-    ball.move(ballVelocity * timeStep.asSeconds());
-    currentBallPosition = ball.getPosition();
+    previousPosition = currentPosition;
+    ball.move(velocity * timeStep.asSeconds());
+    currentPosition = ball.getPosition();
   }
 };
 
@@ -77,34 +77,34 @@ class Player
 public:
   Player(sf::RenderWindow& window)
     : player{createPlayer(window)}
-    , playerVelocity{0.f, 0.f}
+    , velocity{0.f, 0.f}
     , movePlayerUp{false}
     , movePlayerDown{false}
-    , previousPlayerPosition{player.getPosition()}
-    , currentPlayerPosition{player.getPosition()}
+    , previousPosition{player.getPosition()}
+    , currentPosition{player.getPosition()}
   {
   }
 
   sf::RectangleShape player;
-  sf::Vector2f playerVelocity;
+  sf::Vector2f velocity;
   bool movePlayerUp;
   bool movePlayerDown;
-  sf::Vector2f previousPlayerPosition;
-  sf::Vector2f currentPlayerPosition;
+  sf::Vector2f previousPosition;
+  sf::Vector2f currentPosition;
 
   void setVelocity()
   {
     if (movePlayerUp)
     {
-      playerVelocity.y = -300.f;
+      velocity.y = -300.f;
     }
     else if (movePlayerDown)
     {
-      playerVelocity.y = 300.f;
+      velocity.y = 300.f;
     }
     else
     {
-      playerVelocity.y = 0.f;
+      velocity.y = 0.f;
     }
   }
 
@@ -123,29 +123,29 @@ public:
     if (isPenetratingTopWall(window))
     {
       player.setPosition(player.getPosition().x, 0);
-      currentPlayerPosition = player.getPosition();
+      currentPosition = player.getPosition();
     }
     else if (isPenetratingBottomWall(window))
     {
       player.setPosition(player.getPosition().x, window.getSize().y - player.getGlobalBounds().height);
-      currentPlayerPosition = player.getPosition();
+      currentPosition = player.getPosition();
     }
   }
 
   void draw(sf::Time& accumulator, sf::Time& timeStep, sf::RenderWindow& window)
   {
     float alpha{accumulator.asSeconds() / timeStep.asSeconds()};
-    sf::Vector2f interpolatedPlayerPosition{currentPlayerPosition * alpha + previousPlayerPosition * (1.0f - alpha)};      
+    sf::Vector2f interpolatedPlayerPosition{currentPosition * alpha + previousPosition * (1.0f - alpha)};      
     player.setPosition(interpolatedPlayerPosition);
     window.draw(player);
-    player.setPosition(currentPlayerPosition);
+    player.setPosition(currentPosition);
   }
 
   void move(sf::Time timeStep)
   {
-    previousPlayerPosition = currentPlayerPosition;
-    player.move(playerVelocity * timeStep.asSeconds());
-    currentPlayerPosition = player.getPosition();
+    previousPosition = currentPosition;
+    player.move(velocity * timeStep.asSeconds());
+    currentPosition = player.getPosition();
   }
 };
 
@@ -156,37 +156,37 @@ class Opponent
 public:
   Opponent(sf::RenderWindow& window)
     : opponent{createOpponent(window)}
-    , opponentVelocity{0.f, 0.f}
-    , previousOpponentPosition{opponent.getPosition()}
-    , currentOpponentPosition{opponent.getPosition()}
+    , velocity{0.f, 0.f}
+    , previousPosition{opponent.getPosition()}
+    , currentPosition{opponent.getPosition()}
   {
   }
 
   sf::RectangleShape opponent;
-  sf::Vector2f opponentVelocity;
-  sf::Vector2f previousOpponentPosition;
-  sf::Vector2f currentOpponentPosition;
+  sf::Vector2f velocity;
+  sf::Vector2f previousPosition;
+  sf::Vector2f currentPosition;
 
   void setVelocity(Ball& ball, sf::RenderWindow& window)
   {
-    if (ball.ball.getGlobalBounds().left > window.getSize().x / 2.f && ball.ballVelocity.x > 0)
+    if (ball.ball.getGlobalBounds().left > window.getSize().x / 2.f && ball.velocity.x > 0)
     {
       if (ball.ball.getPosition().y < opponent.getGlobalBounds().top + opponent.getGlobalBounds().height / 2)
       {
-        opponentVelocity.y = -300.f;
+        velocity.y = -300.f;
       }
       else if (ball.ball.getPosition().y > opponent.getGlobalBounds().top + opponent.getGlobalBounds().height / 2)
       {
-        opponentVelocity.y = 300.f;
+        velocity.y = 300.f;
       }
       else
       {
-        opponentVelocity.y = 0.f;
+        velocity.y = 0.f;
       }
     }
     else
     {
-      opponentVelocity.y = 0.f;
+      velocity.y = 0.f;
     }
   }
 
@@ -195,29 +195,29 @@ public:
     if (opponent.getGlobalBounds().top < 0)
     {
       opponent.setPosition(opponent.getPosition().x, 0);
-      currentOpponentPosition = opponent.getPosition();
+      currentPosition = opponent.getPosition();
     }
     else if (opponent.getGlobalBounds().top + opponent.getGlobalBounds().height > window.getSize().y)
     {
       opponent.setPosition(opponent.getPosition().x, window.getSize().y - opponent.getGlobalBounds().height);
-      currentOpponentPosition = opponent.getPosition();
+      currentPosition = opponent.getPosition();
     }
   }
 
   void draw(sf::Time& accumulator, sf::Time& timeStep, sf::RenderWindow& window)
   {
     float alpha{accumulator.asSeconds() / timeStep.asSeconds()};
-    sf::Vector2f interpolatedOpponentPosition{currentOpponentPosition * alpha + previousOpponentPosition * (1.0f - alpha)};      
+    sf::Vector2f interpolatedOpponentPosition{currentPosition * alpha + previousPosition * (1.0f - alpha)};      
     opponent.setPosition(interpolatedOpponentPosition);
     window.draw(opponent);
-    opponent.setPosition(currentOpponentPosition);
+    opponent.setPosition(currentPosition);
   }
 
   void move(sf::Time timeStep)
   {
-    previousOpponentPosition = currentOpponentPosition;
-    opponent.move(opponentVelocity * timeStep.asSeconds());
-    currentOpponentPosition = opponent.getPosition();
+    previousPosition = currentPosition;
+    opponent.move(velocity * timeStep.asSeconds());
+    currentPosition = opponent.getPosition();
   }
 };
 
@@ -241,18 +241,18 @@ public:
 void resetEntities(Ball& ball, Player& player, Opponent& opponent, sf::RenderWindow& window)
 {
   ball.ball.setPosition(window.getSize().x / 2.f, window.getSize().y / 2.f);
-  ball.ballVelocity.x = 424.f;
-  ball.ballVelocity.y = 0.f;
+  ball.velocity.x = 424.f;
+  ball.velocity.y = 0.f;
 
   player.player.setPosition(10, window.getSize().y / 2.f - player.player.getGlobalBounds().height / 2.f);
-  player.playerVelocity.x = 0.f;
-  player.playerVelocity.y = 0.f;
+  player.velocity.x = 0.f;
+  player.velocity.y = 0.f;
   player.movePlayerUp = false;
   player.movePlayerDown = false;
   
   opponent.opponent.setPosition(window.getSize().x - (10 + opponent.opponent.getGlobalBounds().width),  window.getSize().y / 2.f - opponent.opponent.getGlobalBounds().height / 2.f);
-  opponent.opponentVelocity.x = 0.f;
-  opponent.opponentVelocity.y = 0.f;
+  opponent.velocity.x = 0.f;
+  opponent.velocity.y = 0.f;
 }
 
 void moveEntities(sf::Clock& clock, sf::Time& accumulator, sf::Time& timeStep, Player& player, Opponent& opponent, Ball& ball)
@@ -277,33 +277,33 @@ void moveEntities(sf::Clock& clock, sf::Time& accumulator, sf::Time& timeStep, P
 
 void handlePlayerBallCollision(Player& player, Ball& ball)
 {
-  if (player.player.getGlobalBounds().intersects(ball.ball.getGlobalBounds()) && ball.ballVelocity.x < 0)
+  if (player.player.getGlobalBounds().intersects(ball.ball.getGlobalBounds()) && ball.velocity.x < 0)
   {
     sf::Vector2f contactPoint{player.player.getGlobalBounds().left + player.player.getGlobalBounds().width, ball.ball.getPosition().y};
     sf::Vector2f translatedContactPoint{contactPoint.x - (player.player.getGlobalBounds().left + player.player.getGlobalBounds().width), contactPoint.y - player.player.getGlobalBounds().top};
     
     float maxAngle{50};
     float alpha{maxAngle * (translatedContactPoint.y / (player.player.getGlobalBounds().height / 2) - 1)};
-    double magnitude{std::sqrt(std::pow(ball.ballVelocity.x, 2) + std::pow(ball.ballVelocity.y, 2))};
+    double magnitude{std::sqrt(std::pow(ball.velocity.x, 2) + std::pow(ball.velocity.y, 2))};
     constexpr float pi{3.14159265359};
-    ball.ballVelocity.x = magnitude * std::cos(alpha * (pi / 180));
-    ball.ballVelocity.y = magnitude * std::sin(alpha * (pi / 180));
+    ball.velocity.x = magnitude * std::cos(alpha * (pi / 180));
+    ball.velocity.y = magnitude * std::sin(alpha * (pi / 180));
   }
 }
 
 void handleOpponentBallCollision(Opponent& opponent, Ball& ball)
 {
-  if (opponent.opponent.getGlobalBounds().intersects(ball.ball.getGlobalBounds()) && ball.ballVelocity.x > 0)
+  if (opponent.opponent.getGlobalBounds().intersects(ball.ball.getGlobalBounds()) && ball.velocity.x > 0)
   {
     sf::Vector2f contactPoint{opponent.opponent.getGlobalBounds().left, ball.ball.getPosition().y};
     sf::Vector2f translatedContactPoint{contactPoint.x - opponent.opponent.getGlobalBounds().left, contactPoint.y - opponent.opponent.getGlobalBounds().top};
     
     float maxAngle{50};
     float alpha{maxAngle * (translatedContactPoint.y / (opponent.opponent.getGlobalBounds().height / 2) - 1)};
-    double magnitude{std::sqrt(std::pow(ball.ballVelocity.x, 2) + std::pow(ball.ballVelocity.y, 2))};
+    double magnitude{std::sqrt(std::pow(ball.velocity.x, 2) + std::pow(ball.velocity.y, 2))};
     constexpr float pi{3.14159265359};
-    ball.ballVelocity.x = magnitude * std::cos(alpha * (pi / 180)) * -1;
-    ball.ballVelocity.y = magnitude * std::sin(alpha * (pi / 180));
+    ball.velocity.x = magnitude * std::cos(alpha * (pi / 180)) * -1;
+    ball.velocity.y = magnitude * std::sin(alpha * (pi / 180));
   }
 }
 
