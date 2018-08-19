@@ -2,6 +2,14 @@
 #include <iostream>
 #include <cmath>
 
+enum class GameState
+{
+  Menu,
+  Playing,
+  Lose,
+  Win
+};
+
 sf::CircleShape createBall(sf::RenderWindow& window);
 
 class Ball
@@ -221,23 +229,6 @@ public:
   }
 };
 
-class GameStates
-{
-public:
-  GameStates(bool menu, bool playing, bool lose, bool win)
-    : menu{menu}
-    , playing{playing}
-    , lose{lose}
-    , win{win}
-  {
-  }
-
-  bool menu{true};
-  bool playing{false};
-  bool lose{false};
-  bool win{false};
-};
-
 void resetEntities(Ball& ball, Player& player, Opponent& opponent, sf::RenderWindow& window)
 {
   ball.ball.setPosition(window.getSize().x / 2.f, window.getSize().y / 2.f);
@@ -362,9 +353,9 @@ sf::Text createWinText(sf::Font& font)
   return winText;
 }
 
-void handleKeyPressEvent(GameStates& gameStates, sf::Event& event, Ball& ball, Player& player, Opponent& opponent, sf::RenderWindow& window)
+void handleKeyPressEvent(GameState& currentGameState, sf::Event& event, Ball& ball, Player& player, Opponent& opponent, sf::RenderWindow& window)
 {
-  if (gameStates.playing)
+  if (currentGameState == GameState::Playing)
   {
     if (event.key.code == sf::Keyboard::Up)
     {
@@ -375,20 +366,18 @@ void handleKeyPressEvent(GameStates& gameStates, sf::Event& event, Ball& ball, P
       player.movePlayerDown = true;
     }
   }
-  else if (gameStates.menu)
+  else if (currentGameState == GameState::Menu)
   {
     if (event.key.code == sf::Keyboard::Space)
     {
-      gameStates.menu = false;
-      gameStates.playing = true;
+      currentGameState = GameState::Playing;
     }
   }
-  else if (gameStates.lose)
+  else if (currentGameState == GameState::Lose)
   {
     if (event.key.code == sf::Keyboard::Space)
     {
-      gameStates.lose = false;
-      gameStates.playing = true;
+      currentGameState = GameState::Playing;
 
       resetEntities(ball, player, opponent, window);
     }
@@ -397,12 +386,11 @@ void handleKeyPressEvent(GameStates& gameStates, sf::Event& event, Ball& ball, P
       window.close();
     }
   }
-  else if (gameStates.win)
+  else if (currentGameState == GameState::Win)
   {
     if (event.key.code == sf::Keyboard::Space)
     {
-      gameStates.win = false;
-      gameStates.playing = true;
+      currentGameState = GameState::Playing;
 
       resetEntities(ball, player, opponent, window);
     }
@@ -413,9 +401,9 @@ void handleKeyPressEvent(GameStates& gameStates, sf::Event& event, Ball& ball, P
   }
 }
 
-void handleKeyReleaseEvent(GameStates& gameStates, sf::Event& event, Player& player)
+void handleKeyReleaseEvent(GameState& currentGameState, sf::Event& event, Player& player)
 {
-  if (gameStates.playing)
+  if (currentGameState == GameState::Playing)
   {
     if (event.key.code == sf::Keyboard::Up)
     {
@@ -428,18 +416,16 @@ void handleKeyReleaseEvent(GameStates& gameStates, sf::Event& event, Player& pla
   }
 }
 
-void setState(GameStates& gameStates, Ball& ball, sf::RenderWindow& window)
+void setState(GameState& currentGameState, Ball& ball, sf::RenderWindow& window)
 {
-  if (gameStates.playing) {
+  if (currentGameState == GameState::Playing) {
     if (ball.ball.getGlobalBounds().left < 0)
     {
-      gameStates.lose = true;
-      gameStates.playing = false;
+      currentGameState = GameState::Lose;
     }
     else if (ball.ball.getGlobalBounds().left + ball.ball.getGlobalBounds().width > window.getSize().x)
     {
-      gameStates.win = true;
-      gameStates.playing = false;
+      currentGameState = GameState::Win;
     }
   }
 }
@@ -464,7 +450,8 @@ int main()
   sf::Text loseText{createLoseText(font)};
   sf::Text winText{createWinText(font)};
 
-  GameStates gameStates{true, false, false, false};
+  // GameStates gameStates{true, false, false, false};
+  GameState currentGameState{GameState::Menu};
 
   sf::Clock clock{};
   sf::Time accumulator{};
@@ -484,17 +471,17 @@ int main()
       }
       else if (event.type == sf::Event::KeyPressed)
       {
-        handleKeyPressEvent(gameStates, event, ball, player, opponent, window);
+        handleKeyPressEvent(currentGameState, event, ball, player, opponent, window);
       }
       else if (event.type == sf::Event::KeyReleased)
       {
-        handleKeyReleaseEvent(gameStates, event, player);
+        handleKeyReleaseEvent(currentGameState, event, player);
       }
     }
 
-    setState(gameStates, ball, window);
+    setState(currentGameState, ball, window);
 
-    if (gameStates.playing)
+    if (currentGameState == GameState::Playing)
     {
       opponent.setVelocity(ball, window);
       player.setVelocity();
@@ -511,21 +498,21 @@ int main()
 
     window.clear();
 
-    if (gameStates.playing)
+    if (currentGameState == GameState::Playing)
     {
       ball.draw(accumulator, timeStep, window);
       player.draw(accumulator, timeStep, window);
       opponent.draw(accumulator, timeStep, window);
     }
-    else if (gameStates.menu)
+    else if (currentGameState == GameState::Menu)
     {
       window.draw(menuText);
     }
-    else if (gameStates.lose)
+    else if (currentGameState == GameState::Lose)
     {
       window.draw(loseText);
     }
-    else if (gameStates.win)
+    else if (currentGameState == GameState::Win)
     {
       window.draw(winText);
     }
