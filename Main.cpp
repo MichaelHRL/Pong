@@ -52,6 +52,15 @@ public:
       ballVelocity.y *= -1;
     }
   }
+
+  void draw(sf::Time& accumulator, sf::Time& timeStep, sf::RenderWindow& window)
+  {
+    float alpha{accumulator.asSeconds() / timeStep.asSeconds()};
+    sf::Vector2f interpolatedBallPosition{currentBallPosition * alpha + previousBallPosition * (1.0f - alpha)};      
+    ball.setPosition(interpolatedBallPosition);
+    window.draw(ball);
+    ball.setPosition(currentBallPosition);
+  }
 };
 
 sf::RectangleShape createPlayer(sf::RenderWindow& window);
@@ -115,6 +124,15 @@ public:
       currentPlayerPosition = player.getPosition();
     }
   }
+
+  void draw(sf::Time& accumulator, sf::Time& timeStep, sf::RenderWindow& window)
+  {
+    float alpha{accumulator.asSeconds() / timeStep.asSeconds()};
+    sf::Vector2f interpolatedPlayerPosition{currentPlayerPosition * alpha + previousPlayerPosition * (1.0f - alpha)};      
+    player.setPosition(interpolatedPlayerPosition);
+    window.draw(player);
+    player.setPosition(currentPlayerPosition);
+  }
 };
 
 sf::RectangleShape createOpponent(sf::RenderWindow& window);
@@ -170,6 +188,15 @@ public:
       opponent.setPosition(opponent.getPosition().x, window.getSize().y - opponent.getGlobalBounds().height);
       currentOpponentPosition = opponent.getPosition();
     }
+  }
+
+  void draw(sf::Time& accumulator, sf::Time& timeStep, sf::RenderWindow& window)
+  {
+    float alpha{accumulator.asSeconds() / timeStep.asSeconds()};
+    sf::Vector2f interpolatedOpponentPosition{currentOpponentPosition * alpha + previousOpponentPosition * (1.0f - alpha)};      
+    opponent.setPosition(interpolatedOpponentPosition);
+    window.draw(opponent);
+    opponent.setPosition(currentOpponentPosition);
   }
 };
 
@@ -322,34 +349,6 @@ sf::Text createWinText(sf::Font& font)
   return winText;
 }
 
-void drawBall(Ball& ball, sf::Time& accumulator, sf::Time& timeStep, sf::RenderWindow& window)
-{
-  float alpha{accumulator.asSeconds() / timeStep.asSeconds()};
-  sf::Vector2f interpolatedBallPosition{ball.currentBallPosition * alpha + ball.previousBallPosition * (1.0f - alpha)};      
-  ball.ball.setPosition(interpolatedBallPosition);
-  window.draw(ball.ball);
-  ball.ball.setPosition(ball.currentBallPosition);
-}
-
-void drawPlayer(Player& player, sf::Time& accumulator, sf::Time& timeStep, sf::RenderWindow& window)
-{
-  float alpha{accumulator.asSeconds() / timeStep.asSeconds()};
-  sf::Vector2f interpolatedPlayerPosition{player.currentPlayerPosition * alpha + player.previousPlayerPosition * (1.0f - alpha)};      
-  player.player.setPosition(interpolatedPlayerPosition);
-  window.draw(player.player);
-  player.player.setPosition(player.currentPlayerPosition);
-}
-
-void drawOpponent(Opponent& opponent, sf::Time& accumulator, sf::Time& timeStep, sf::RenderWindow& window)
-{
-  float alpha{accumulator.asSeconds() / timeStep.asSeconds()};
-  sf::Vector2f interpolatedOpponentPosition{opponent.currentOpponentPosition * alpha + opponent.previousOpponentPosition * (1.0f - alpha)};      
-  opponent.opponent.setPosition(interpolatedOpponentPosition);
-  window.draw(opponent.opponent);
-  opponent.opponent.setPosition(opponent.currentOpponentPosition);
-}
-
-
 void handleKeyPressEvent(GameStates& gameStates, sf::Event& event, Ball& ball, Player& player, Opponent& opponent, sf::RenderWindow& window)
 {
   if (gameStates.playing)
@@ -501,9 +500,9 @@ int main()
 
     if (gameStates.playing)
     {
-      drawBall(ball, accumulator, timeStep, window);
-      drawPlayer(player, accumulator, timeStep, window);
-      drawOpponent(opponent, accumulator, timeStep, window);
+      ball.draw(accumulator, timeStep, window);
+      player.draw(accumulator, timeStep, window);
+      opponent.draw(accumulator, timeStep, window);
     }
     else if (gameStates.menu)
     {
