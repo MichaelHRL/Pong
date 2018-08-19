@@ -61,6 +61,13 @@ public:
     window.draw(ball);
     ball.setPosition(currentBallPosition);
   }
+
+  void move(sf::Time timeStep)
+  {
+    previousBallPosition = currentBallPosition;
+    ball.move(ballVelocity * timeStep.asSeconds());
+    currentBallPosition = ball.getPosition();
+  }
 };
 
 sf::RectangleShape createPlayer(sf::RenderWindow& window);
@@ -133,6 +140,13 @@ public:
     window.draw(player);
     player.setPosition(currentPlayerPosition);
   }
+
+  void move(sf::Time timeStep)
+  {
+    previousPlayerPosition = currentPlayerPosition;
+    player.move(playerVelocity * timeStep.asSeconds());
+    currentPlayerPosition = player.getPosition();
+  }
 };
 
 sf::RectangleShape createOpponent(sf::RenderWindow& window);
@@ -198,6 +212,13 @@ public:
     window.draw(opponent);
     opponent.setPosition(currentOpponentPosition);
   }
+
+  void move(sf::Time timeStep)
+  {
+    previousOpponentPosition = currentOpponentPosition;
+    opponent.move(opponentVelocity * timeStep.asSeconds());
+    currentOpponentPosition = opponent.getPosition();
+  }
 };
 
 class GameStates
@@ -245,17 +266,9 @@ void moveEntities(sf::Clock& clock, sf::Time& accumulator, sf::Time& timeStep, P
 
   while (accumulator >= timeStep)
   {
-    player.previousPlayerPosition = player.currentPlayerPosition;
-    player.player.move(player.playerVelocity * timeStep.asSeconds());
-    player.currentPlayerPosition = player.player.getPosition();
-
-    ball.previousBallPosition = ball.currentBallPosition;
-    ball.ball.move(ball.ballVelocity * timeStep.asSeconds());
-    ball.currentBallPosition = ball.ball.getPosition();
-
-    opponent.previousOpponentPosition = opponent.currentOpponentPosition;
-    opponent.opponent.move(opponent.opponentVelocity * timeStep.asSeconds());
-    opponent.currentOpponentPosition = opponent.opponent.getPosition();
+    player.move(timeStep);
+    ball.move(timeStep);
+    opponent.move(timeStep);
 
     accumulator -= timeStep;
   }
