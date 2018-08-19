@@ -450,7 +450,6 @@ int main()
   sf::Text loseText{createLoseText(font)};
   sf::Text winText{createWinText(font)};
 
-  // GameStates gameStates{true, false, false, false};
   GameState currentGameState{GameState::Menu};
 
   sf::Clock clock{};
