@@ -76,6 +76,13 @@ public:
     ball.move(velocity * timeStep.asSeconds());
     currentPosition = ball.getPosition();
   }
+
+  void reset(sf::RenderWindow& window)
+  {
+    ball.setPosition(window.getSize().x / 2.f, window.getSize().y / 2.f);
+    velocity.x = 424.f;
+    velocity.y = 0.f;
+  }
 };
 
 sf::RectangleShape createPlayer(sf::RenderWindow& window);
@@ -155,6 +162,15 @@ public:
     player.move(velocity * timeStep.asSeconds());
     currentPosition = player.getPosition();
   }
+
+  void reset(sf::RenderWindow& window)
+  {
+    player.setPosition(10, window.getSize().y / 2.f - player.getGlobalBounds().height / 2.f);
+    velocity.x = 0.f;
+    velocity.y = 0.f;
+    movePlayerUp = false;
+    movePlayerDown = false;
+  }
 };
 
 sf::RectangleShape createOpponent(sf::RenderWindow& window);
@@ -227,23 +243,20 @@ public:
     opponent.move(velocity * timeStep.asSeconds());
     currentPosition = opponent.getPosition();
   }
+
+  void reset(sf::RenderWindow& window)
+  {
+    opponent.setPosition(window.getSize().x - (10 + opponent.getGlobalBounds().width),  window.getSize().y / 2.f - opponent.getGlobalBounds().height / 2.f);
+    velocity.x = 0.f;
+    velocity.y = 0.f;
+  }
 };
 
 void resetEntities(Ball& ball, Player& player, Opponent& opponent, sf::RenderWindow& window)
 {
-  ball.ball.setPosition(window.getSize().x / 2.f, window.getSize().y / 2.f);
-  ball.velocity.x = 424.f;
-  ball.velocity.y = 0.f;
-
-  player.player.setPosition(10, window.getSize().y / 2.f - player.player.getGlobalBounds().height / 2.f);
-  player.velocity.x = 0.f;
-  player.velocity.y = 0.f;
-  player.movePlayerUp = false;
-  player.movePlayerDown = false;
-  
-  opponent.opponent.setPosition(window.getSize().x - (10 + opponent.opponent.getGlobalBounds().width),  window.getSize().y / 2.f - opponent.opponent.getGlobalBounds().height / 2.f);
-  opponent.velocity.x = 0.f;
-  opponent.velocity.y = 0.f;
+  ball.reset(window);
+  player.reset(window);
+  opponent.reset(window);
 }
 
 void moveEntities(sf::Clock& clock, sf::Time& accumulator, sf::Time& timeStep, Player& player, Opponent& opponent, Ball& ball)
