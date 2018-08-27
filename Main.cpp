@@ -23,9 +23,11 @@ void resetEntities(Ball& ball, Player& player, Opponent& opponent, sf::RenderWin
 void moveEntities(sf::Clock& clock, sf::Time& accumulator, sf::Time& timeStep, Player& player, Opponent& opponent, Ball& ball)
 {
   sf::Time frameTime{clock.restart()};
-  if (frameTime.asSeconds() > 0.1f)
+  // This is needed because enourmous frameTimes can lead to large, unwanted updates in the physics calculations e.g. the ball could tunnel through a paddle
+  constexpr float maxFrameTime{0.1f};
+  if (frameTime.asSeconds() > maxFrameTime)
   {
-    frameTime = sf::seconds(0.1f);
+    frameTime = sf::seconds(maxFrameTime);
   }
   accumulator += frameTime;
 
@@ -47,7 +49,7 @@ void handlePlayerBallCollision(Player& player, Ball& ball)
     sf::Vector2f contactPoint{player.player.getGlobalBounds().left + player.player.getGlobalBounds().width, ball.ball.getPosition().y};
     sf::Vector2f translatedContactPoint{contactPoint.x - (player.player.getGlobalBounds().left + player.player.getGlobalBounds().width), contactPoint.y - player.player.getGlobalBounds().top};
     
-    float maxAngle{50};
+    constexpr float maxAngle{50};
     float alpha{maxAngle * (translatedContactPoint.y / (player.player.getGlobalBounds().height / 2) - 1)};
     double magnitude{std::sqrt(std::pow(ball.velocity.x, 2) + std::pow(ball.velocity.y, 2))};
     constexpr float pi{3.14159265359};
@@ -63,7 +65,7 @@ void handleOpponentBallCollision(Opponent& opponent, Ball& ball)
     sf::Vector2f contactPoint{opponent.opponent.getGlobalBounds().left, ball.ball.getPosition().y};
     sf::Vector2f translatedContactPoint{contactPoint.x - opponent.opponent.getGlobalBounds().left, contactPoint.y - opponent.opponent.getGlobalBounds().top};
     
-    float maxAngle{50};
+    constexpr float maxAngle{50};
     float alpha{maxAngle * (translatedContactPoint.y / (opponent.opponent.getGlobalBounds().height / 2) - 1)};
     double magnitude{std::sqrt(std::pow(ball.velocity.x, 2) + std::pow(ball.velocity.y, 2))};
     constexpr float pi{3.14159265359};
