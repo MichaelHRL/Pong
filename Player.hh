@@ -10,7 +10,7 @@ class Player
 public:
   Player(sf::RenderWindow& window);
 
-  sf::RectangleShape player;
+  sf::RectangleShape shape;
   sf::Vector2f velocity;
   bool movePlayerUp;
   bool movePlayerDown;

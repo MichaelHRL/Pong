@@ -2,20 +2,20 @@
 
 sf::RectangleShape createPlayerShape(sf::RenderWindow& window)
 {
-  sf::RectangleShape player{sf::Vector2f{10.f, 100.f}};
-  player.setPosition(10, window.getSize().y / 2.f - player.getGlobalBounds().height / 2.f);
-  player.setFillColor(sf::Color::Red);
-  return player;
+  sf::RectangleShape shape{sf::Vector2f{10.f, 100.f}};
+  shape.setPosition(10, window.getSize().y / 2.f - shape.getGlobalBounds().height / 2.f);
+  shape.setFillColor(sf::Color::Red);
+  return shape;
 }
 
 
 Player::Player(sf::RenderWindow& window)
-  : player{createPlayerShape(window)}
+  : shape{createPlayerShape(window)}
   , velocity{0.f, 0.f}
   , movePlayerUp{false}
   , movePlayerDown{false}
-  , previousPosition{player.getPosition()}
-  , currentPosition{player.getPosition()}
+  , previousPosition{shape.getPosition()}
+  , currentPosition{shape.getPosition()}
 {
 }
 
@@ -37,25 +37,25 @@ void Player::setVelocity()
 
 bool Player::isPenetratingTopWall(sf::RenderWindow& window)
 {
-  return player.getGlobalBounds().top < 0;
+  return shape.getGlobalBounds().top < 0;
 }
 
 bool Player::isPenetratingBottomWall(sf::RenderWindow& window)
 {
-  return player.getGlobalBounds().top + player.getGlobalBounds().height > window.getSize().y;
+  return shape.getGlobalBounds().top + shape.getGlobalBounds().height > window.getSize().y;
 }
 
 void Player::handleWallCollision(sf::RenderWindow& window)
 {
   if (isPenetratingTopWall(window))
   {
-    player.setPosition(player.getPosition().x, 0);
-    currentPosition = player.getPosition();
+    shape.setPosition(shape.getPosition().x, 0);
+    currentPosition = shape.getPosition();
   }
   else if (isPenetratingBottomWall(window))
   {
-    player.setPosition(player.getPosition().x, window.getSize().y - player.getGlobalBounds().height);
-    currentPosition = player.getPosition();
+    shape.setPosition(shape.getPosition().x, window.getSize().y - shape.getGlobalBounds().height);
+    currentPosition = shape.getPosition();
   }
 }
 
@@ -63,21 +63,21 @@ void Player::draw(sf::Time& accumulator, sf::Time& timeStep, sf::RenderWindow& w
 {
   float alpha{accumulator.asSeconds() / timeStep.asSeconds()};
   sf::Vector2f interpolatedPlayerPosition{currentPosition * alpha + previousPosition * (1.0f - alpha)};      
-  player.setPosition(interpolatedPlayerPosition);
-  window.draw(player);
-  player.setPosition(currentPosition);
+  shape.setPosition(interpolatedPlayerPosition);
+  window.draw(shape);
+  shape.setPosition(currentPosition);
 }
 
 void Player::move(sf::Time timeStep)
 {
   previousPosition = currentPosition;
-  player.move(velocity * timeStep.asSeconds());
-  currentPosition = player.getPosition();
+  shape.move(velocity * timeStep.asSeconds());
+  currentPosition = shape.getPosition();
 }
 
 void Player::reset(sf::RenderWindow& window)
 {
-  player.setPosition(10, window.getSize().y / 2.f - player.getGlobalBounds().height / 2.f);
+  shape.setPosition(10, window.getSize().y / 2.f - shape.getGlobalBounds().height / 2.f);
   velocity.x = 0.f;
   velocity.y = 0.f;
   movePlayerUp = false;

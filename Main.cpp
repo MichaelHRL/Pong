@@ -44,13 +44,13 @@ void moveEntities(sf::Clock& clock, sf::Time& accumulator, sf::Time& timeStep, P
 
 void handlePlayerBallCollision(Player& player, Ball& ball)
 {
-  if (player.player.getGlobalBounds().intersects(ball.ball.getGlobalBounds()) && ball.velocity.x < 0)
+  if (player.shape.getGlobalBounds().intersects(ball.ball.getGlobalBounds()) && ball.velocity.x < 0)
   {
-    sf::Vector2f contactPoint{player.player.getGlobalBounds().left + player.player.getGlobalBounds().width, ball.ball.getPosition().y};
-    sf::Vector2f translatedContactPoint{contactPoint.x - (player.player.getGlobalBounds().left + player.player.getGlobalBounds().width), contactPoint.y - player.player.getGlobalBounds().top};
+    sf::Vector2f contactPoint{player.shape.getGlobalBounds().left + player.shape.getGlobalBounds().width, ball.ball.getPosition().y};
+    sf::Vector2f translatedContactPoint{contactPoint.x - (player.shape.getGlobalBounds().left + player.shape.getGlobalBounds().width), contactPoint.y - player.shape.getGlobalBounds().top};
     
     constexpr float maxAngle{50};
-    float alpha{maxAngle * (translatedContactPoint.y / (player.player.getGlobalBounds().height / 2) - 1)};
+    float alpha{maxAngle * (translatedContactPoint.y / (player.shape.getGlobalBounds().height / 2) - 1)};
     double magnitude{std::sqrt(std::pow(ball.velocity.x, 2) + std::pow(ball.velocity.y, 2))};
     constexpr float pi{3.14159265359};
     ball.velocity.x = magnitude * std::cos(alpha * (pi / 180));
