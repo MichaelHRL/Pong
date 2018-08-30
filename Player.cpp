@@ -15,7 +15,6 @@ Player::Player(sf::RenderWindow& window)
   , movePlayerUp{false}
   , movePlayerDown{false}
   , previousPosition{shape.getPosition()}
-  , currentPosition{shape.getPosition()}
 {
 }
 
@@ -50,18 +49,17 @@ void Player::handleWallCollision(sf::RenderWindow& window)
   if (isPenetratingTopWall(window))
   {
     shape.setPosition(shape.getPosition().x, 0);
-    currentPosition = shape.getPosition();
   }
   else if (isPenetratingBottomWall(window))
   {
     shape.setPosition(shape.getPosition().x, window.getSize().y - shape.getGlobalBounds().height);
-    currentPosition = shape.getPosition();
   }
 }
 
 void Player::draw(sf::Time& accumulator, sf::Time& timeStep, sf::RenderWindow& window)
 {
   float alpha{accumulator.asSeconds() / timeStep.asSeconds()};
+  sf::Vector2f currentPosition{shape.getPosition()};
   sf::Vector2f interpolatedPlayerPosition{currentPosition * alpha + previousPosition * (1.0f - alpha)};      
   shape.setPosition(interpolatedPlayerPosition);
   window.draw(shape);
@@ -70,9 +68,8 @@ void Player::draw(sf::Time& accumulator, sf::Time& timeStep, sf::RenderWindow& w
 
 void Player::move(sf::Time timeStep)
 {
-  previousPosition = currentPosition;
+  previousPosition = shape.getPosition();
   shape.move(velocity * timeStep.asSeconds());
-  currentPosition = shape.getPosition();
 }
 
 void Player::reset(sf::RenderWindow& window)

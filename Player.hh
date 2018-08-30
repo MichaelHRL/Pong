@@ -15,7 +15,6 @@ public:
   bool movePlayerUp;
   bool movePlayerDown;
   sf::Vector2f previousPosition;
-  sf::Vector2f currentPosition;
 
   void setVelocity();
 
