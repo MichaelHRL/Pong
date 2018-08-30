@@ -1,6 +1,6 @@
 #include "Player.hh"
 
-sf::RectangleShape createPlayer(sf::RenderWindow& window)
+sf::RectangleShape createPlayerShape(sf::RenderWindow& window)
 {
   sf::RectangleShape player{sf::Vector2f{10.f, 100.f}};
   player.setPosition(10, window.getSize().y / 2.f - player.getGlobalBounds().height / 2.f);
@@ -10,7 +10,7 @@ sf::RectangleShape createPlayer(sf::RenderWindow& window)
 
 
 Player::Player(sf::RenderWindow& window)
-  : player{createPlayer(window)}
+  : player{createPlayerShape(window)}
   , velocity{0.f, 0.f}
   , movePlayerUp{false}
   , movePlayerDown{false}
