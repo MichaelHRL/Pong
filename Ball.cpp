@@ -12,7 +12,6 @@ Ball::Ball(sf::RenderWindow& window)
   : shape{createBallShape(window)}
   , velocity{424.f, 0.f}
   , previousPosition{shape.getPosition()}
-  , currentPosition{shape.getPosition()}
 {
 }
 
@@ -52,6 +51,7 @@ void Ball::handleWallCollision(sf::RenderWindow& window)
 void Ball::draw(sf::Time& accumulator, sf::Time& timeStep, sf::RenderWindow& window)
 {
   float alpha{accumulator.asSeconds() / timeStep.asSeconds()};
+  sf::Vector2f currentPosition{shape.getPosition()};
   sf::Vector2f interpolatedBallPosition{currentPosition * alpha + previousPosition * (1.0f - alpha)};      
   shape.setPosition(interpolatedBallPosition);
   window.draw(shape);
@@ -60,9 +60,8 @@ void Ball::draw(sf::Time& accumulator, sf::Time& timeStep, sf::RenderWindow& win
 
 void Ball::move(sf::Time timeStep)
 {
-  previousPosition = currentPosition;
+  previousPosition = shape.getPosition();
   shape.move(velocity * timeStep.asSeconds());
-  currentPosition = shape.getPosition();
 }
 
 void Ball::reset(sf::RenderWindow& window)
