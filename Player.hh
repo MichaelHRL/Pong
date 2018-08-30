@@ -3,7 +3,7 @@
 
 #include <SFML/Graphics.hpp>
 
-sf::RectangleShape createPlayerShape(sf::RenderWindow& window);
+sf::RectangleShape createPlayerShape(const sf::RenderWindow& window);
 
 class Player
 {
