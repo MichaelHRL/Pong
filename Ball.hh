@@ -13,7 +13,6 @@ public:
   sf::CircleShape shape;
   sf::Vector2f velocity;
   sf::Vector2f previousPosition;
-  sf::Vector2f currentPosition;
 
   bool isPenetratingIntoLeftWall(sf::RenderWindow& window);
   bool isPenetratingIntoRightWall(sf::RenderWindow& window);
