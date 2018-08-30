@@ -1,5 +1,5 @@
-#ifndef BALL_H
-#define BALL_H
+#ifndef BALL_HH
+#define BALL_HH
 
 #include <SFML/Graphics.hpp>
 

@@ -1,5 +1,5 @@
-#ifndef OPPONENT_H
-#define OPPONENT_H
+#ifndef OPPONENT_HH
+#define OPPONENT_HH
 
 #include <SFML/Graphics.hpp>
 #include "Ball.hh"
