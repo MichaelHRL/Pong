@@ -1,6 +1,6 @@
 #include "Player.hh"
 
-sf::RectangleShape createPlayerShape(sf::RenderWindow& window)
+sf::RectangleShape createPlayerShape(const sf::RenderWindow& window)
 {
   sf::RectangleShape shape{sf::Vector2f{10.f, 100.f}};
   shape.setPosition(10, window.getSize().y / 2.f - shape.getGlobalBounds().height / 2.f);
@@ -9,7 +9,7 @@ sf::RectangleShape createPlayerShape(sf::RenderWindow& window)
 }
 
 
-Player::Player(sf::RenderWindow& window)
+Player::Player(const sf::RenderWindow& window)
   : shape{createPlayerShape(window)}
   , velocity{0.f, 0.f}
   , movePlayerUp{false}
@@ -34,17 +34,17 @@ void Player::setVelocity()
   }
 }
 
-bool Player::isPenetratingTopWall(sf::RenderWindow& window)
+bool Player::isPenetratingTopWall(const sf::RenderWindow& window)
 {
   return shape.getGlobalBounds().top < 0;
 }
 
-bool Player::isPenetratingBottomWall(sf::RenderWindow& window)
+bool Player::isPenetratingBottomWall(const sf::RenderWindow& window)
 {
   return shape.getGlobalBounds().top + shape.getGlobalBounds().height > window.getSize().y;
 }
 
-void Player::handleWallCollision(sf::RenderWindow& window)
+void Player::handleWallCollision(const sf::RenderWindow& window)
 {
   if (isPenetratingTopWall(window))
   {
@@ -56,23 +56,23 @@ void Player::handleWallCollision(sf::RenderWindow& window)
   }
 }
 
-void Player::draw(sf::Time& accumulator, sf::Time& timeStep, sf::RenderWindow& window)
+void Player::draw(const sf::Time& accumulator, const sf::Time& timeStep, sf::RenderWindow& window)
 {
-  float alpha{accumulator.asSeconds() / timeStep.asSeconds()};
-  sf::Vector2f currentPosition{shape.getPosition()};
-  sf::Vector2f interpolatedPlayerPosition{currentPosition * alpha + previousPosition * (1.0f - alpha)};      
+  const float alpha{accumulator.asSeconds() / timeStep.asSeconds()};
+  const sf::Vector2f currentPosition{shape.getPosition()};
+  const sf::Vector2f interpolatedPlayerPosition{currentPosition * alpha + previousPosition * (1.0f - alpha)};      
   shape.setPosition(interpolatedPlayerPosition);
   window.draw(shape);
   shape.setPosition(currentPosition);
 }
 
-void Player::move(sf::Time timeStep)
+void Player::move(const sf::Time& timeStep)
 {
   previousPosition = shape.getPosition();
   shape.move(velocity * timeStep.asSeconds());
 }
 
-void Player::reset(sf::RenderWindow& window)
+void Player::reset(const sf::RenderWindow& window)
 {
   shape.setPosition(10, window.getSize().y / 2.f - shape.getGlobalBounds().height / 2.f);
   velocity.x = 0.f;
