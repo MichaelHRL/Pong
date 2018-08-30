@@ -11,7 +11,7 @@ class Opponent
 public:
   Opponent(sf::RenderWindow& window);
 
-  sf::RectangleShape opponent;
+  sf::RectangleShape shape;
   sf::Vector2f velocity;
   sf::Vector2f previousPosition;
   sf::Vector2f currentPosition;

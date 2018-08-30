@@ -60,13 +60,13 @@ void handlePlayerBallCollision(Player& player, Ball& ball)
 
 void handleOpponentBallCollision(Opponent& opponent, Ball& ball)
 {
-  if (opponent.opponent.getGlobalBounds().intersects(ball.shape.getGlobalBounds()) && ball.velocity.x > 0)
+  if (opponent.shape.getGlobalBounds().intersects(ball.shape.getGlobalBounds()) && ball.velocity.x > 0)
   {
-    sf::Vector2f contactPoint{opponent.opponent.getGlobalBounds().left, ball.shape.getPosition().y};
-    sf::Vector2f translatedContactPoint{contactPoint.x - opponent.opponent.getGlobalBounds().left, contactPoint.y - opponent.opponent.getGlobalBounds().top};
+    sf::Vector2f contactPoint{opponent.shape.getGlobalBounds().left, ball.shape.getPosition().y};
+    sf::Vector2f translatedContactPoint{contactPoint.x - opponent.shape.getGlobalBounds().left, contactPoint.y - opponent.shape.getGlobalBounds().top};
     
     constexpr float maxAngle{50};
-    float alpha{maxAngle * (translatedContactPoint.y / (opponent.opponent.getGlobalBounds().height / 2) - 1)};
+    float alpha{maxAngle * (translatedContactPoint.y / (opponent.shape.getGlobalBounds().height / 2) - 1)};
     double magnitude{std::sqrt(std::pow(ball.velocity.x, 2) + std::pow(ball.velocity.y, 2))};
     constexpr float pi{3.14159265359};
     ball.velocity.x = magnitude * std::cos(alpha * (pi / 180)) * -1;
