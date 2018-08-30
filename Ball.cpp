@@ -1,6 +1,6 @@
 #include "Ball.hh"
 
-sf::CircleShape createBallShape(sf::RenderWindow& window)
+sf::CircleShape createBallShape(const sf::RenderWindow& window)
 {
   sf::CircleShape shape{5.f};
   shape.setPosition(window.getSize().x / 2.f, window.getSize().y / 2.f);
@@ -8,35 +8,35 @@ sf::CircleShape createBallShape(sf::RenderWindow& window)
   return shape;
 }
 
-Ball::Ball(sf::RenderWindow& window)
+Ball::Ball(const sf::RenderWindow& window)
   : shape{createBallShape(window)}
   , velocity{424.f, 0.f}
   , previousPosition{shape.getPosition()}
 {
 }
 
-bool Ball::isPenetratingIntoLeftWall(sf::RenderWindow& window)
+bool Ball::isPenetratingIntoLeftWall(const sf::RenderWindow& window)
 {
   // The check for velocity is neccessary because it ensures that the shape doesn't stay trapped within a surface
   return shape.getGlobalBounds().left < 0 && velocity.x < 0;
 }
 
-bool Ball::isPenetratingIntoRightWall(sf::RenderWindow& window)
+bool Ball::isPenetratingIntoRightWall(const sf::RenderWindow& window)
 {
   return shape.getGlobalBounds().left + shape.getGlobalBounds().width > window.getSize().x && velocity.x > 0;
 }
 
-bool Ball::isPenetratingIntoTopWall(sf::RenderWindow& window)
+bool Ball::isPenetratingIntoTopWall(const sf::RenderWindow& window)
 {
   return shape.getGlobalBounds().top < 0 && velocity.y < 0;
 }
 
-bool Ball::isPenetratingIntoBottomWall(sf::RenderWindow& window)
+bool Ball::isPenetratingIntoBottomWall(const sf::RenderWindow& window)
 {
   return shape.getGlobalBounds().top + shape.getGlobalBounds().height > window.getSize().y && velocity.y > 0;
 }
 
-void Ball::handleWallCollision(sf::RenderWindow& window)
+void Ball::handleWallCollision(const sf::RenderWindow& window)
 {
   if (isPenetratingIntoLeftWall(window) || isPenetratingIntoRightWall(window))
   {
@@ -48,23 +48,23 @@ void Ball::handleWallCollision(sf::RenderWindow& window)
   }
 }
 
-void Ball::draw(sf::Time& accumulator, sf::Time& timeStep, sf::RenderWindow& window)
+void Ball::draw(const sf::Time& accumulator, const sf::Time& timeStep, sf::RenderWindow& window)
 {
-  float alpha{accumulator.asSeconds() / timeStep.asSeconds()};
-  sf::Vector2f currentPosition{shape.getPosition()};
-  sf::Vector2f interpolatedBallPosition{currentPosition * alpha + previousPosition * (1.0f - alpha)};      
+  const float alpha{accumulator.asSeconds() / timeStep.asSeconds()};
+  const sf::Vector2f currentPosition{shape.getPosition()};
+  const sf::Vector2f interpolatedBallPosition{currentPosition * alpha + previousPosition * (1.0f - alpha)};      
   shape.setPosition(interpolatedBallPosition);
   window.draw(shape);
   shape.setPosition(currentPosition);
 }
 
-void Ball::move(sf::Time timeStep)
+void Ball::move(const sf::Time& timeStep)
 {
   previousPosition = shape.getPosition();
   shape.move(velocity * timeStep.asSeconds());
 }
 
-void Ball::reset(sf::RenderWindow& window)
+void Ball::reset(const sf::RenderWindow& window)
 {
   shape.setPosition(window.getSize().x / 2.f, window.getSize().y / 2.f);
   velocity.x = 424.f;

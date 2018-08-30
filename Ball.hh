@@ -8,21 +8,21 @@ sf::CircleShape createBallShape(sf::RenderWindow& window);
 class Ball
 {
 public:
-  Ball(sf::RenderWindow& window);
+  Ball(const sf::RenderWindow& window);
 
   sf::CircleShape shape;
   sf::Vector2f velocity;
   sf::Vector2f previousPosition;
 
-  bool isPenetratingIntoLeftWall(sf::RenderWindow& window);
-  bool isPenetratingIntoRightWall(sf::RenderWindow& window);
-  bool isPenetratingIntoTopWall(sf::RenderWindow& window);
-  bool isPenetratingIntoBottomWall(sf::RenderWindow& window);
-  void handleWallCollision(sf::RenderWindow& window);
+  bool isPenetratingIntoLeftWall(const sf::RenderWindow& window);
+  bool isPenetratingIntoRightWall(const sf::RenderWindow& window);
+  bool isPenetratingIntoTopWall(const sf::RenderWindow& window);
+  bool isPenetratingIntoBottomWall(const sf::RenderWindow& window);
+  void handleWallCollision(const sf::RenderWindow& window);
 
-  void draw(sf::Time& accumulator, sf::Time& timeStep, sf::RenderWindow& window);
-  void move(sf::Time timeStep);
-  void reset(sf::RenderWindow& window);
+  void draw(const sf::Time& accumulator, const sf::Time& timeStep, sf::RenderWindow& window);
+  void move(const sf::Time& timeStep);
+  void reset(const sf::RenderWindow& window);
 };
 
 #endif
