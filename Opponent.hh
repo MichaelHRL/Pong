@@ -14,7 +14,6 @@ public:
   sf::RectangleShape shape;
   sf::Vector2f velocity;
   sf::Vector2f previousPosition;
-  sf::Vector2f currentPosition;
 
   void setVelocity(Ball& ball, sf::RenderWindow& window);
   void handleWallCollision(sf::RenderWindow& window);

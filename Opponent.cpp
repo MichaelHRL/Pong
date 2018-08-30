@@ -12,7 +12,6 @@ Opponent::Opponent(sf::RenderWindow& window)
   : shape{createOpponentShape(window)}
   , velocity{0.f, 0.f}
   , previousPosition{shape.getPosition()}
-  , currentPosition{shape.getPosition()}
 {
 }
 
@@ -44,18 +43,17 @@ void Opponent::handleWallCollision(sf::RenderWindow& window)
   if (shape.getGlobalBounds().top < 0)
   {
     shape.setPosition(shape.getPosition().x, 0);
-    currentPosition = shape.getPosition();
   }
   else if (shape.getGlobalBounds().top + shape.getGlobalBounds().height > window.getSize().y)
   {
     shape.setPosition(shape.getPosition().x, window.getSize().y - shape.getGlobalBounds().height);
-    currentPosition = shape.getPosition();
   }
 }
 
 void Opponent::draw(sf::Time& accumulator, sf::Time& timeStep, sf::RenderWindow& window)
 {
   float alpha{accumulator.asSeconds() / timeStep.asSeconds()};
+  sf::Vector2f currentPosition{shape.getPosition()};
   sf::Vector2f interpolatedOpponentPosition{currentPosition * alpha + previousPosition * (1.0f - alpha)};      
   shape.setPosition(interpolatedOpponentPosition);
   window.draw(shape);
@@ -64,9 +62,8 @@ void Opponent::draw(sf::Time& accumulator, sf::Time& timeStep, sf::RenderWindow&
 
 void Opponent::move(sf::Time timeStep)
 {
-  previousPosition = currentPosition;
+  previousPosition = shape.getPosition();
   shape.move(velocity * timeStep.asSeconds());
-  currentPosition = shape.getPosition();
 }
 
 void Opponent::reset(sf::RenderWindow& window)
