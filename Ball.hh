@@ -10,7 +10,7 @@ class Ball
 public:
   Ball(sf::RenderWindow& window);
 
-  sf::CircleShape ball;
+  sf::CircleShape shape;
   sf::Vector2f velocity;
   sf::Vector2f previousPosition;
   sf::Vector2f currentPosition;

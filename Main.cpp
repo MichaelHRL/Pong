@@ -44,9 +44,9 @@ void moveEntities(sf::Clock& clock, sf::Time& accumulator, sf::Time& timeStep, P
 
 void handlePlayerBallCollision(Player& player, Ball& ball)
 {
-  if (player.shape.getGlobalBounds().intersects(ball.ball.getGlobalBounds()) && ball.velocity.x < 0)
+  if (player.shape.getGlobalBounds().intersects(ball.shape.getGlobalBounds()) && ball.velocity.x < 0)
   {
-    sf::Vector2f contactPoint{player.shape.getGlobalBounds().left + player.shape.getGlobalBounds().width, ball.ball.getPosition().y};
+    sf::Vector2f contactPoint{player.shape.getGlobalBounds().left + player.shape.getGlobalBounds().width, ball.shape.getPosition().y};
     sf::Vector2f translatedContactPoint{contactPoint.x - (player.shape.getGlobalBounds().left + player.shape.getGlobalBounds().width), contactPoint.y - player.shape.getGlobalBounds().top};
     
     constexpr float maxAngle{50};
@@ -60,9 +60,9 @@ void handlePlayerBallCollision(Player& player, Ball& ball)
 
 void handleOpponentBallCollision(Opponent& opponent, Ball& ball)
 {
-  if (opponent.opponent.getGlobalBounds().intersects(ball.ball.getGlobalBounds()) && ball.velocity.x > 0)
+  if (opponent.opponent.getGlobalBounds().intersects(ball.shape.getGlobalBounds()) && ball.velocity.x > 0)
   {
-    sf::Vector2f contactPoint{opponent.opponent.getGlobalBounds().left, ball.ball.getPosition().y};
+    sf::Vector2f contactPoint{opponent.opponent.getGlobalBounds().left, ball.shape.getPosition().y};
     sf::Vector2f translatedContactPoint{contactPoint.x - opponent.opponent.getGlobalBounds().left, contactPoint.y - opponent.opponent.getGlobalBounds().top};
     
     constexpr float maxAngle{50};
@@ -170,11 +170,11 @@ void handleKeyReleaseEvent(GameState& currentGameState, sf::Event& event, Player
 void setState(GameState& currentGameState, Ball& ball, sf::RenderWindow& window)
 {
   if (currentGameState == GameState::Playing) {
-    if (ball.ball.getGlobalBounds().left < 0)
+    if (ball.shape.getGlobalBounds().left < 0)
     {
       currentGameState = GameState::Lose;
     }
-    else if (ball.ball.getGlobalBounds().left + ball.ball.getGlobalBounds().width > window.getSize().x)
+    else if (ball.shape.getGlobalBounds().left + ball.shape.getGlobalBounds().width > window.getSize().x)
     {
       currentGameState = GameState::Win;
     }
