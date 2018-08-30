@@ -1,6 +1,6 @@
 #include "Opponent.hh"
 
-sf::RectangleShape createOpponent(sf::RenderWindow& window)
+sf::RectangleShape createOpponentShape(sf::RenderWindow& window)
 {
   sf::RectangleShape opponent{sf::Vector2f{10.f, 100.f}};
   opponent.setPosition(window.getSize().x - (10 + opponent.getGlobalBounds().width),  window.getSize().y / 2.f - opponent.getGlobalBounds().height / 2.f);
@@ -9,7 +9,7 @@ sf::RectangleShape createOpponent(sf::RenderWindow& window)
 }
 
 Opponent::Opponent(sf::RenderWindow& window)
-  : opponent{createOpponent(window)}
+  : opponent{createOpponentShape(window)}
   , velocity{0.f, 0.f}
   , previousPosition{opponent.getPosition()}
   , currentPosition{opponent.getPosition()}

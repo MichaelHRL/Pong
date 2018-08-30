@@ -4,7 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include "Ball.hh"
 
-sf::RectangleShape createOpponent(sf::RenderWindow& window);
+sf::RectangleShape createOpponentShape(sf::RenderWindow& window);
 
 class Opponent
 {
