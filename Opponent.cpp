@@ -1,6 +1,6 @@
 #include "Opponent.hh"
 
-sf::RectangleShape createOpponentShape(sf::RenderWindow& window)
+sf::RectangleShape createOpponentShape(const sf::RenderWindow& window)
 {
   sf::RectangleShape shape{sf::Vector2f{10.f, 100.f}};
   shape.setPosition(window.getSize().x - (10 + shape.getGlobalBounds().width),  window.getSize().y / 2.f - shape.getGlobalBounds().height / 2.f);
@@ -8,14 +8,14 @@ sf::RectangleShape createOpponentShape(sf::RenderWindow& window)
   return shape;
 }
 
-Opponent::Opponent(sf::RenderWindow& window)
+Opponent::Opponent(const sf::RenderWindow& window)
   : shape{createOpponentShape(window)}
   , velocity{0.f, 0.f}
   , previousPosition{shape.getPosition()}
 {
 }
 
-void Opponent::setVelocity(Ball& ball, sf::RenderWindow& window)
+void Opponent::setVelocity(const Ball& ball, const sf::RenderWindow& window)
 {
   if (ball.shape.getGlobalBounds().left > window.getSize().x / 2.f && ball.velocity.x > 0)
   {
@@ -38,7 +38,7 @@ void Opponent::setVelocity(Ball& ball, sf::RenderWindow& window)
   }
 }
 
-void Opponent::handleWallCollision(sf::RenderWindow& window)
+void Opponent::handleWallCollision(const sf::RenderWindow& window)
 {
   if (shape.getGlobalBounds().top < 0)
   {
@@ -50,23 +50,23 @@ void Opponent::handleWallCollision(sf::RenderWindow& window)
   }
 }
 
-void Opponent::draw(sf::Time& accumulator, sf::Time& timeStep, sf::RenderWindow& window)
+void Opponent::draw(const sf::Time& accumulator, const sf::Time& timeStep, sf::RenderWindow& window)
 {
-  float alpha{accumulator.asSeconds() / timeStep.asSeconds()};
-  sf::Vector2f currentPosition{shape.getPosition()};
-  sf::Vector2f interpolatedOpponentPosition{currentPosition * alpha + previousPosition * (1.0f - alpha)};      
+  const float alpha{accumulator.asSeconds() / timeStep.asSeconds()};
+  const sf::Vector2f currentPosition{shape.getPosition()};
+  const sf::Vector2f interpolatedOpponentPosition{currentPosition * alpha + previousPosition * (1.0f - alpha)};      
   shape.setPosition(interpolatedOpponentPosition);
   window.draw(shape);
   shape.setPosition(currentPosition);
 }
 
-void Opponent::move(sf::Time timeStep)
+void Opponent::move(const sf::Time& timeStep)
 {
   previousPosition = shape.getPosition();
   shape.move(velocity * timeStep.asSeconds());
 }
 
-void Opponent::reset(sf::RenderWindow& window)
+void Opponent::reset(const sf::RenderWindow& window)
 {
   shape.setPosition(window.getSize().x - (10 + shape.getGlobalBounds().width),  window.getSize().y / 2.f - shape.getGlobalBounds().height / 2.f);
   velocity.x = 0.f;

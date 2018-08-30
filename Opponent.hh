@@ -4,23 +4,23 @@
 #include <SFML/Graphics.hpp>
 #include "Ball.hh"
 
-sf::RectangleShape createOpponentShape(sf::RenderWindow& window);
+sf::RectangleShape createOpponentShape(const sf::RenderWindow& window);
 
 class Opponent
 {
 public:
-  Opponent(sf::RenderWindow& window);
+  Opponent(const sf::RenderWindow& window);
 
   sf::RectangleShape shape;
   sf::Vector2f velocity;
   sf::Vector2f previousPosition;
 
-  void setVelocity(Ball& ball, sf::RenderWindow& window);
-  void handleWallCollision(sf::RenderWindow& window);
+  void setVelocity(const Ball& ball, const sf::RenderWindow& window);
+  void handleWallCollision(const sf::RenderWindow& window);
 
-  void draw(sf::Time& accumulator, sf::Time& timeStep, sf::RenderWindow& window);
-  void move(sf::Time timeStep);
-  void reset(sf::RenderWindow& window);
+  void draw(const sf::Time& accumulator, const sf::Time& timeStep, sf::RenderWindow& window);
+  void move(const sf::Time& timeStep);
+  void reset(const sf::RenderWindow& window);
 };
 
 #endif
