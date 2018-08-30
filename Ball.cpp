@@ -1,6 +1,6 @@
 #include "Ball.hh"
 
-sf::CircleShape createBall(sf::RenderWindow& window)
+sf::CircleShape createBallShape(sf::RenderWindow& window)
 {
   sf::CircleShape ball{5.f};
   ball.setPosition(window.getSize().x / 2.f, window.getSize().y / 2.f);
@@ -9,7 +9,7 @@ sf::CircleShape createBall(sf::RenderWindow& window)
 }
 
 Ball::Ball(sf::RenderWindow& window)
-  : ball{createBall(window)}
+  : ball{createBallShape(window)}
   , velocity{424.f, 0.f}
   , previousPosition{ball.getPosition()}
   , currentPosition{ball.getPosition()}

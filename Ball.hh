@@ -3,7 +3,7 @@
 
 #include <SFML/Graphics.hpp>
 
-sf::CircleShape createBall(sf::RenderWindow& window);
+sf::CircleShape createBallShape(sf::RenderWindow& window);
 
 class Ball
 {
