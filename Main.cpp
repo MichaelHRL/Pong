@@ -41,20 +41,32 @@ void moveEntities(sf::Clock& clock, sf::Time& accumulator, sf::Time& timeStep, P
   }
 }
 
+float toRadians(float angleInDegrees)
+{
+  constexpr float pi{3.14159265359};
+  constexpr float conversionScaler{pi / 180};
+  return angleInDegrees * conversionScaler;
+}
+
+float vectorMagnitude(const sf::Vector2f& vector)
+{
+  return std::sqrt(std::pow(vector.x, 2) + std::pow(vector.y, 2));
+}
 
 void handlePlayerBallCollision(Player& player, Ball& ball)
 {
   if (player.shape.getGlobalBounds().intersects(ball.shape.getGlobalBounds()) && ball.velocity.x < 0)
   {
-    sf::Vector2f contactPoint{player.shape.getGlobalBounds().left + player.shape.getGlobalBounds().width, ball.shape.getPosition().y};
-    sf::Vector2f translatedContactPoint{contactPoint.x - (player.shape.getGlobalBounds().left + player.shape.getGlobalBounds().width), contactPoint.y - player.shape.getGlobalBounds().top};
-    
-    constexpr float maxAngle{50};
-    float alpha{maxAngle * (translatedContactPoint.y / (player.shape.getGlobalBounds().height / 2) - 1)};
-    double magnitude{std::sqrt(std::pow(ball.velocity.x, 2) + std::pow(ball.velocity.y, 2))};
-    constexpr float pi{3.14159265359};
-    ball.velocity.x = magnitude * std::cos(alpha * (pi / 180));
-    ball.velocity.y = magnitude * std::sin(alpha * (pi / 180));
+    const sf::Vector2f centerOfLineSegment{0.f, player.shape.getGlobalBounds().top + player.shape.getGlobalBounds().height / 2};
+    const sf::Vector2f translatedContactPoint{0.f, ball.shape.getPosition().y - centerOfLineSegment.y};
+    const float relativeDistanceToCenter{translatedContactPoint.y / (player.shape.getGlobalBounds().height / 2)};
+    constexpr float maxReflectedAngle{50};
+
+    const float reflectedAngle{maxReflectedAngle * relativeDistanceToCenter};
+    const float reflectedMagnitude{vectorMagnitude(ball.velocity)};
+
+    ball.velocity.x = reflectedMagnitude * std::cos(toRadians(reflectedAngle));
+    ball.velocity.y = reflectedMagnitude * std::sin(toRadians(reflectedAngle));
   }
 }
 
