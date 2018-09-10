@@ -53,20 +53,27 @@ float vectorMagnitude(const sf::Vector2f& vector)
   return std::sqrt(std::pow(vector.x, 2) + std::pow(vector.y, 2));
 }
 
+// Calculates the reflected direction of the ball from the paddle.
+sf::Vector2f reflectedVector(sf::RectangleShape& paddle, Ball& ball)
+{
+  const sf::Vector2f centerOfLineSegment{0.f, paddle.getGlobalBounds().top + paddle.getGlobalBounds().height / 2};
+  const sf::Vector2f translatedContactPoint{0.f, ball.shape.getPosition().y - centerOfLineSegment.y};
+  const float relativeDistanceToCenter{translatedContactPoint.y / (paddle.getGlobalBounds().height / 2)};
+  constexpr float maxReflectedAngle{50};
+
+  const float reflectedAngle{maxReflectedAngle * relativeDistanceToCenter};
+  const float reflectedMagnitude{vectorMagnitude(ball.velocity)};
+
+  float x{reflectedMagnitude * std::cos(toRadians(reflectedAngle))};
+  float y{reflectedMagnitude * std::sin(toRadians(reflectedAngle))};
+  return sf::Vector2f{x, y};
+}
+
 void handlePlayerBallCollision(Player& player, Ball& ball)
 {
   if (player.shape.getGlobalBounds().intersects(ball.shape.getGlobalBounds()) && ball.velocity.x < 0)
   {
-    const sf::Vector2f centerOfLineSegment{0.f, player.shape.getGlobalBounds().top + player.shape.getGlobalBounds().height / 2};
-    const sf::Vector2f translatedContactPoint{0.f, ball.shape.getPosition().y - centerOfLineSegment.y};
-    const float relativeDistanceToCenter{translatedContactPoint.y / (player.shape.getGlobalBounds().height / 2)};
-    constexpr float maxReflectedAngle{50};
-
-    const float reflectedAngle{maxReflectedAngle * relativeDistanceToCenter};
-    const float reflectedMagnitude{vectorMagnitude(ball.velocity)};
-
-    ball.velocity.x = reflectedMagnitude * std::cos(toRadians(reflectedAngle));
-    ball.velocity.y = reflectedMagnitude * std::sin(toRadians(reflectedAngle));
+    ball.velocity = reflectedVector(player.shape, ball);
   }
 }
 
@@ -74,15 +81,8 @@ void handleOpponentBallCollision(Opponent& opponent, Ball& ball)
 {
   if (opponent.shape.getGlobalBounds().intersects(ball.shape.getGlobalBounds()) && ball.velocity.x > 0)
   {
-    sf::Vector2f contactPoint{opponent.shape.getGlobalBounds().left, ball.shape.getPosition().y};
-    sf::Vector2f translatedContactPoint{contactPoint.x - opponent.shape.getGlobalBounds().left, contactPoint.y - opponent.shape.getGlobalBounds().top};
-    
-    constexpr float maxAngle{50};
-    float alpha{maxAngle * (translatedContactPoint.y / (opponent.shape.getGlobalBounds().height / 2) - 1)};
-    double magnitude{std::sqrt(std::pow(ball.velocity.x, 2) + std::pow(ball.velocity.y, 2))};
-    constexpr float pi{3.14159265359};
-    ball.velocity.x = magnitude * std::cos(alpha * (pi / 180)) * -1;
-    ball.velocity.y = magnitude * std::sin(alpha * (pi / 180));
+    ball.velocity = reflectedVector(opponent.shape, ball);
+    ball.velocity.x *= -1;
   }
 }
 
