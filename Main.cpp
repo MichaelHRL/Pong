@@ -53,7 +53,7 @@ float vectorMagnitude(const sf::Vector2f& vector)
   return std::sqrt(std::pow(vector.x, 2) + std::pow(vector.y, 2));
 }
 
-// Calculates the reflected direction of the ball from the paddle.
+// Calculates the reflected velocity of the ball from the paddle, however the angle is in the range 0 < angle < 90 || 270 < angle < 360 so this means that the x component of the reflected vector must have its x component negated when this function is used for the ball-opponent collision.
 sf::Vector2f reflectedVector(sf::RectangleShape& paddle, Ball& ball)
 {
   const sf::Vector2f centerOfLineSegment{0.f, paddle.getGlobalBounds().top + paddle.getGlobalBounds().height / 2};
