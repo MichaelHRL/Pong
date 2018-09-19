@@ -13,14 +13,14 @@ enum class GameState
   Win
 };
 
-void resetEntities(Ball& ball, Player& player, Opponent& opponent, sf::RenderWindow& window)
+void resetEntities(Ball& ball, Player& player, Opponent& opponent, const sf::RenderWindow& window)
 {
   ball.reset(window);
   player.reset(window);
   opponent.reset(window);
 }
 
-void moveEntities(sf::Clock& clock, sf::Time& accumulator, sf::Time& timeStep, Player& player, Opponent& opponent, Ball& ball)
+void moveEntities(sf::Clock& clock, sf::Time& accumulator, const sf::Time& timeStep, Player& player, Opponent& opponent, Ball& ball)
 {
   sf::Time frameTime{clock.restart()};
   // This is needed because enourmous frameTimes can lead to large, unwanted updates in the physics calculations e.g. the ball could tunnel through a paddle
@@ -41,7 +41,7 @@ void moveEntities(sf::Clock& clock, sf::Time& accumulator, sf::Time& timeStep, P
   }
 }
 
-float toRadians(float angleInDegrees)
+float toRadians(const float angleInDegrees)
 {
   constexpr float pi{3.14159265359};
   constexpr float conversionScaler{pi / 180};
@@ -54,7 +54,7 @@ float vectorMagnitude(const sf::Vector2f& vector)
 }
 
 // Calculates the reflected velocity of the ball from the paddle, however the angle is in the range 0 < angle < 90 || 270 < angle < 360 so this means that the x component of the reflected vector must have its x component negated when this function is used for the ball-opponent collision.
-sf::Vector2f reflectedVector(sf::RectangleShape& paddle, Ball& ball)
+sf::Vector2f reflectedVector(const sf::RectangleShape& paddle, Ball& ball)
 {
   const sf::Vector2f centerOfLineSegment{0.f, paddle.getGlobalBounds().top + paddle.getGlobalBounds().height / 2};
   const sf::Vector2f translatedContactPoint{0.f, ball.shape.getPosition().y - centerOfLineSegment.y};
@@ -69,7 +69,7 @@ sf::Vector2f reflectedVector(sf::RectangleShape& paddle, Ball& ball)
   return sf::Vector2f{x, y};
 }
 
-void handlePlayerBallCollision(Player& player, Ball& ball)
+void handlePlayerBallCollision(const Player& player, Ball& ball)
 {
   if (player.shape.getGlobalBounds().intersects(ball.shape.getGlobalBounds()) && ball.velocity.x < 0)
   {
@@ -77,7 +77,7 @@ void handlePlayerBallCollision(Player& player, Ball& ball)
   }
 }
 
-void handleOpponentBallCollision(Opponent& opponent, Ball& ball)
+void handleOpponentBallCollision(const Opponent& opponent, Ball& ball)
 {
   if (opponent.shape.getGlobalBounds().intersects(ball.shape.getGlobalBounds()) && ball.velocity.x > 0)
   {
@@ -86,7 +86,7 @@ void handleOpponentBallCollision(Opponent& opponent, Ball& ball)
   }
 }
 
-sf::Text createMenuText(sf::Font& font)
+sf::Text createMenuText(const sf::Font& font)
 {
   sf::Text menuText;
   menuText.setFont(font);
@@ -96,7 +96,7 @@ sf::Text createMenuText(sf::Font& font)
   return menuText;
 }
 
-sf::Text createLoseText(sf::Font& font)
+sf::Text createLoseText(const sf::Font& font)
 {
   sf::Text loseText;
   loseText.setFont(font);
@@ -106,7 +106,7 @@ sf::Text createLoseText(sf::Font& font)
   return loseText;
 }
 
-sf::Text createWinText(sf::Font& font)
+sf::Text createWinText(const sf::Font& font)
 {
   sf::Text winText;
   winText.setFont(font);
@@ -116,7 +116,7 @@ sf::Text createWinText(sf::Font& font)
   return winText;
 }
 
-void handleKeyPressEvent(GameState& currentGameState, sf::Event& event, Ball& ball, Player& player, Opponent& opponent, sf::RenderWindow& window)
+void handleKeyPressEvent(GameState& currentGameState, const sf::Event& event, Ball& ball, Player& player, Opponent& opponent, sf::RenderWindow& window)
 {
   if (currentGameState == GameState::Playing)
   {
@@ -164,7 +164,7 @@ void handleKeyPressEvent(GameState& currentGameState, sf::Event& event, Ball& ba
   }
 }
 
-void handleKeyReleaseEvent(GameState& currentGameState, sf::Event& event, Player& player)
+void handleKeyReleaseEvent(const GameState& currentGameState, const sf::Event& event, Player& player)
 {
   if (currentGameState == GameState::Playing)
   {
@@ -179,7 +179,7 @@ void handleKeyReleaseEvent(GameState& currentGameState, sf::Event& event, Player
   }
 }
 
-void setState(GameState& currentGameState, Ball& ball, sf::RenderWindow& window)
+void setState(GameState& currentGameState, const Ball& ball, const sf::RenderWindow& window)
 {
   if (currentGameState == GameState::Playing) {
     if (ball.shape.getGlobalBounds().left < 0)
