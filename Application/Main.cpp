@@ -193,7 +193,7 @@ void setState(GameState& currentGameState, const Ball& ball, const sf::RenderWin
   }
 }
 
-int main()
+void startGame()
 {
   sf::RenderWindow window{sf::VideoMode{500, 500}, "Pong"};
 
@@ -205,8 +205,7 @@ int main()
   sf::Font font;
   if (!font.loadFromFile("C:\\Windows\\Fonts\\Arial.ttf"))
   {
-    std::cout << "Couldn't load font" << '\n';
-    return -1;
+    throw "Couldn't load font";
   }
 
   sf::Text menuText{createMenuText(font)};
@@ -280,5 +279,17 @@ int main()
     }
     
     window.display();
+  }
+}
+
+int main()
+{
+  try
+  {
+    startGame();
+  }
+  catch (const std::string& errorMessage)
+  {
+    std::cout << errorMessage << '\n';
   }
 }
