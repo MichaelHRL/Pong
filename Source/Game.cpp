@@ -87,34 +87,32 @@ void handleOpponentBallCollision(const Opponent& opponent, Ball& ball)
   }
 }
 
+sf::Text createBasicText(const sf::Font& font, const std::string& string)
+{
+  sf::Text text;
+  text.setFont(font);
+  text.setString(string);
+  text.setFillColor(sf::Color::White);
+  text.setCharacterSize(32);
+  return text;
+}
+
 sf::Text createMenuText(const sf::Font& font)
 {
-  sf::Text menuText;
-  menuText.setFont(font);
-  menuText.setString("Press space to play.\nUse up and down to move.");
-  menuText.setFillColor(sf::Color::White);
-  menuText.setCharacterSize(32);
-  return menuText;
+  const std::string text{"Press space to play.\nUse up and down to move."};
+  return createBasicText(font, text);
 }
 
 sf::Text createLoseText(const sf::Font& font)
 {
-  sf::Text loseText;
-  loseText.setFont(font);
-  loseText.setString("You lose!\nPress space to play again.\nPress escape to exit.");
-  loseText.setFillColor(sf::Color::White);
-  loseText.setCharacterSize(32);
-  return loseText;
+  const std::string text{"You lose!\nPress space to play again.\nPress escape to exit."};
+  return createBasicText(font, text);
 }
 
 sf::Text createWinText(const sf::Font& font)
 {
-  sf::Text winText;
-  winText.setFont(font);
-  winText.setString("You win!\nPress space to play again.\nPress escape to exit.");
-  winText.setFillColor(sf::Color::White);
-  winText.setCharacterSize(32);
-  return winText;
+  const std::string text{"You win!\nPress space to play again.\nPress escape to exit."};
+  return createBasicText(font, text);
 }
 
 void handleKeyPressEvent(GameState& currentGameState, const sf::Event& event, Ball& ball, Player& player, Opponent& opponent, sf::RenderWindow& window)
