@@ -13,7 +13,7 @@ void moveEntities(sf::Clock& clock, sf::Time& accumulator, const sf::Time& timeS
 float toRadians(const float angleInDegrees);
 float vectorMagnitude(const sf::Vector2f& vector);
 
-sf::Vector2f reflectedVector(const sf::RectangleShape& paddle, Ball& ball);
+sf::Vector2f reflectedVector(const sf::RectangleShape& paddle, const Ball& ball);
 
 void handlePlayerBallCollision(const Player& player, Ball& ball);
 void handleOpponentBallCollision(const Opponent& opponent, Ball& ball);
