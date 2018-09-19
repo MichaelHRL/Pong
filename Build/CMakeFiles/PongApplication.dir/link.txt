@@ -1,3 +1,0 @@
-C:\msys64\mingw64\bin\cmake.exe -E remove -f CMakeFiles\PongApplication.dir/objects.a
-C:\msys64\mingw64\bin\ar.exe cr CMakeFiles\PongApplication.dir/objects.a @CMakeFiles\PongApplication.dir\objects1.rsp
-C:\msys64\mingw64\bin\g++.exe    -Wl,--whole-archive CMakeFiles\PongApplication.dir/objects.a -Wl,--no-whole-archive  -o PongApplication.exe -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\PongApplication.dir\linklibs.rsp

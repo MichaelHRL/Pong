@@ -1,2 +1,0 @@
-C:\msys64\mingw64\bin\ar.exe qc libPongLibrary.a  CMakeFiles/PongLibrary.dir/Source/Opponent.cpp.obj CMakeFiles/PongLibrary.dir/Source/Ball.cpp.obj CMakeFiles/PongLibrary.dir/Source/Player.cpp.obj
-C:\msys64\mingw64\bin\ranlib.exe libPongLibrary.a

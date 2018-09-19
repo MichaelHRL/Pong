@@ -1,4 +1,0 @@
-C:/Projects/Pong/Build/CMakeFiles/rebuild_cache.dir
-C:/Projects/Pong/Build/CMakeFiles/edit_cache.dir
-C:/Projects/Pong/Build/CMakeFiles/PongLibrary.dir
-C:/Projects/Pong/Build/CMakeFiles/PongApplication.dir
