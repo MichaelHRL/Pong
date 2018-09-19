@@ -1,2 +1,2 @@
-*.exe
+Build/*
 .vscode
