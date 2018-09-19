@@ -6,7 +6,7 @@
 _The version numbers are the ones that I've used, earlier versions may be sufficient but I have not tested them._
 
 # Build
-Type `.\Build.ps1` in the PowerShell console. Make sure the execution policy is set to allow downloaded scripts to run. Also make sure that the paths to the SFML binaries and headers are correct.
+Make sure you're in the Scripts folder and then type `.\Build.ps1` in the PowerShell console. Make sure the execution policy is set to allow downloaded scripts to run. Also make sure that the paths to the SFML binaries and headers are correct.
 
 # Run
-Type `.\Run.ps1` in the PowerShell console. Make sure the execution policy is set to allow downloaded scripts to run. Also make sure that the paths to the SFML binaries and headers are correct.
+Make sure you're in the Scripts folder and then type `.\Run.ps1` in the PowerShell console. Make sure the execution policy is set to allow downloaded scripts to run. Also make sure that the paths to the SFML binaries and headers are correct.
