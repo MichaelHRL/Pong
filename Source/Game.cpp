@@ -55,11 +55,11 @@ float vectorMagnitude(const sf::Vector2f& vector)
 }
 
 // Calculates the reflected velocity of the ball from the paddle, however the angle is in the range 0 < angle < 90 || 270 < angle < 360 so this means that the x component of the reflected vector must have its x component negated when this function is used for the ball-opponent collision.
-sf::Vector2f reflectedVector(const sf::RectangleShape& paddle, const Ball& ball)
+sf::Vector2f reflectedVector(const sf::FloatRect& paddle, const Ball& ball)
 {
-  const sf::Vector2f centerOfLineSegment{0.f, paddle.getGlobalBounds().top + paddle.getGlobalBounds().height / 2};
+  const sf::Vector2f centerOfLineSegment{0.f, paddle.top + paddle.height / 2};
   const sf::Vector2f translatedContactPoint{0.f, ball.getPosition().y - centerOfLineSegment.y};
-  const float relativeDistanceToCenter{translatedContactPoint.y / (paddle.getGlobalBounds().height / 2)};
+  const float relativeDistanceToCenter{translatedContactPoint.y / (paddle.height / 2)};
   constexpr float maxReflectedAngle{50};
 
   const float reflectedAngle{maxReflectedAngle * relativeDistanceToCenter};
@@ -74,16 +74,16 @@ void handlePlayerBallCollision(const Player& player, Ball& ball)
 {
   if (player.shape.getGlobalBounds().intersects(ball.getGlobalAABB()) && ball.getVelocity().x < 0)
   {
-    const sf::Vector2f newVelocity{reflectedVector(player.shape, ball)};
+    const sf::Vector2f newVelocity{reflectedVector(player.shape.getGlobalBounds(), ball)};
     ball.setVelocity(newVelocity.x, newVelocity.y);
   }
 }
 
 void handleOpponentBallCollision(const Opponent& opponent, Ball& ball)
 {
-  if (opponent.shape.getGlobalBounds().intersects(ball.getGlobalAABB()) && ball.getVelocity().x > 0)
+  if (opponent.getGlobalAABB().intersects(ball.getGlobalAABB()) && ball.getVelocity().x > 0)
   {
-    const sf::Vector2f newVelocity{reflectedVector(opponent.shape, ball)};
+    const sf::Vector2f newVelocity{reflectedVector(opponent.getGlobalAABB(), ball)};
     ball.setVelocity(-newVelocity.x, newVelocity.y);
   }
 }
