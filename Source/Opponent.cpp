@@ -17,13 +17,13 @@ Opponent::Opponent(const sf::RenderWindow& window)
 
 void Opponent::setVelocity(const Ball& ball, const sf::RenderWindow& window)
 {
-  if (ball.shape.getGlobalBounds().left > window.getSize().x / 2.f && ball.velocity.x > 0)
+  if (ball.getGlobalAABB().left > window.getSize().x / 2.f && ball.getVelocity().x > 0)
   {
-    if (ball.shape.getPosition().y < shape.getGlobalBounds().top + shape.getGlobalBounds().height / 2)
+    if (ball.getPosition().y < shape.getGlobalBounds().top + shape.getGlobalBounds().height / 2)
     {
       velocity.y = -300.f;
     }
-    else if (ball.shape.getPosition().y > shape.getGlobalBounds().top + shape.getGlobalBounds().height / 2)
+    else if (ball.getPosition().y > shape.getGlobalBounds().top + shape.getGlobalBounds().height / 2)
     {
       velocity.y = 300.f;
     }

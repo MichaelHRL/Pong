@@ -15,6 +15,27 @@ Ball::Ball(const sf::RenderWindow& window)
 {
 }
 
+sf::Vector2f Ball::getPosition() const
+{
+  return shape.getPosition();
+}
+
+sf::Vector2f Ball::getVelocity() const
+{
+  return velocity;
+}
+
+void Ball::setVelocity(float x, float y)
+{
+  velocity.x = x;
+  velocity.y = y;
+}
+
+sf::FloatRect Ball::getGlobalAABB() const
+{
+  return shape.getGlobalBounds();
+}
+
 bool Ball::isPenetratingIntoLeftWall(const sf::RenderWindow& window)
 {
   // The check for velocity is neccessary because it ensures that the shape doesn't stay trapped within a surface

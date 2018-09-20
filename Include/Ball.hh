@@ -10,9 +10,12 @@ class Ball
 public:
   Ball(const sf::RenderWindow& window);
 
-  sf::CircleShape shape;
-  sf::Vector2f velocity;
-  sf::Vector2f previousPosition;
+  sf::Vector2f getPosition() const;
+  sf::Vector2f getVelocity() const;
+
+  void setVelocity(float x, float y);
+
+  sf::FloatRect getGlobalAABB() const;
 
   bool isPenetratingIntoLeftWall(const sf::RenderWindow& window);
   bool isPenetratingIntoRightWall(const sf::RenderWindow& window);
@@ -23,6 +26,10 @@ public:
   void draw(const sf::Time& accumulator, const sf::Time& timeStep, sf::RenderWindow& window);
   void move(const sf::Time& timeStep);
   void reset(const sf::RenderWindow& window);
+private:
+  sf::CircleShape shape;
+  sf::Vector2f velocity;
+  sf::Vector2f previousPosition;
 };
 
 #endif

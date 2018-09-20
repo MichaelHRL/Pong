@@ -58,12 +58,12 @@ float vectorMagnitude(const sf::Vector2f& vector)
 sf::Vector2f reflectedVector(const sf::RectangleShape& paddle, const Ball& ball)
 {
   const sf::Vector2f centerOfLineSegment{0.f, paddle.getGlobalBounds().top + paddle.getGlobalBounds().height / 2};
-  const sf::Vector2f translatedContactPoint{0.f, ball.shape.getPosition().y - centerOfLineSegment.y};
+  const sf::Vector2f translatedContactPoint{0.f, ball.getPosition().y - centerOfLineSegment.y};
   const float relativeDistanceToCenter{translatedContactPoint.y / (paddle.getGlobalBounds().height / 2)};
   constexpr float maxReflectedAngle{50};
 
   const float reflectedAngle{maxReflectedAngle * relativeDistanceToCenter};
-  const float reflectedMagnitude{vectorMagnitude(ball.velocity)};
+  const float reflectedMagnitude{vectorMagnitude(ball.getVelocity())};
 
   float x{reflectedMagnitude * std::cos(toRadians(reflectedAngle))};
   float y{reflectedMagnitude * std::sin(toRadians(reflectedAngle))};
@@ -72,18 +72,19 @@ sf::Vector2f reflectedVector(const sf::RectangleShape& paddle, const Ball& ball)
 
 void handlePlayerBallCollision(const Player& player, Ball& ball)
 {
-  if (player.shape.getGlobalBounds().intersects(ball.shape.getGlobalBounds()) && ball.velocity.x < 0)
+  if (player.shape.getGlobalBounds().intersects(ball.getGlobalAABB()) && ball.getVelocity().x < 0)
   {
-    ball.velocity = reflectedVector(player.shape, ball);
+    const sf::Vector2f newVelocity{reflectedVector(player.shape, ball)};
+    ball.setVelocity(newVelocity.x, newVelocity.y);
   }
 }
 
 void handleOpponentBallCollision(const Opponent& opponent, Ball& ball)
 {
-  if (opponent.shape.getGlobalBounds().intersects(ball.shape.getGlobalBounds()) && ball.velocity.x > 0)
+  if (opponent.shape.getGlobalBounds().intersects(ball.getGlobalAABB()) && ball.getVelocity().x > 0)
   {
-    ball.velocity = reflectedVector(opponent.shape, ball);
-    ball.velocity.x *= -1;
+    const sf::Vector2f newVelocity{reflectedVector(opponent.shape, ball)};
+    ball.setVelocity(-newVelocity.x, newVelocity.y);
   }
 }
 
@@ -181,11 +182,11 @@ void handleKeyReleaseEvent(const GameState& currentGameState, const sf::Event& e
 void setState(GameState& currentGameState, const Ball& ball, const sf::RenderWindow& window)
 {
   if (currentGameState == GameState::Playing) {
-    if (ball.shape.getGlobalBounds().left < 0)
+    if (ball.getGlobalAABB().left < 0)
     {
       currentGameState = GameState::Lose;
     }
-    else if (ball.shape.getGlobalBounds().left + ball.shape.getGlobalBounds().width > window.getSize().x)
+    else if (ball.getGlobalAABB().left + ball.getGlobalAABB().width > window.getSize().x)
     {
       currentGameState = GameState::Win;
     }
