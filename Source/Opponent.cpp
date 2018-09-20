@@ -15,6 +15,12 @@ Opponent::Opponent(const sf::RenderWindow& window)
 {
 }
 
+sf::FloatRect Opponent::getGlobalAABB() const
+{
+  return shape.getGlobalBounds();
+}
+
+
 void Opponent::setVelocity(const Ball& ball, const sf::RenderWindow& window)
 {
   if (ball.getGlobalAABB().left > window.getSize().x / 2.f && ball.getVelocity().x > 0)
