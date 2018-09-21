@@ -13,8 +13,7 @@ Player::Player(const sf::RenderWindow& window)
   : shape{createPlayerShape(window)}
   , velocity{0.f, 0.f}
   , previousPosition{shape.getPosition()}
-  , movePlayerUp{false}
-  , movePlayerDown{false}
+  , direction{Direction::None}
 {
 }
 
@@ -25,32 +24,20 @@ sf::FloatRect Player::getGlobalAABB() const
 
 void Player::setMovementDirection(const Direction& direction)
 {
-  if (direction == Direction::Up)
-  {
-    movePlayerUp = true;
-  }
-  else if (direction == Direction::Down)
-  {
-    movePlayerDown = true;
-  }
-  else if (direction == Direction::None)
-  {
-    movePlayerUp = false;
-    movePlayerDown = false;
-  }
+  this->direction = direction;
 }
 
 void Player::setVelocity()
 {
-  if (movePlayerUp)
+  if (direction == Direction::Up)
   {
     velocity.y = -300.f;
   }
-  else if (movePlayerDown)
+  else if (direction == Direction::Down)
   {
     velocity.y = 300.f;
   }
-  else
+  else if (direction == Direction::None)
   {
     velocity.y = 0.f;
   }
@@ -99,6 +86,5 @@ void Player::reset(const sf::RenderWindow& window)
   shape.setPosition(10, window.getSize().y / 2.f - shape.getGlobalBounds().height / 2.f);
   velocity.x = 0.f;
   velocity.y = 0.f;
-  movePlayerUp = false;
-  movePlayerDown = false;
+  direction = Direction::None;
 }

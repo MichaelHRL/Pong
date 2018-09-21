@@ -34,8 +34,7 @@ private:
   sf::Vector2f velocity;
   sf::Vector2f previousPosition;
 
-  bool movePlayerUp;
-  bool movePlayerDown;
+  Direction direction;
 };
 
 #endif
