@@ -8,13 +8,17 @@ sf::RectangleShape createPlayerShape(const sf::RenderWindow& window);
 class Player
 {
 public:
+  enum class Direction
+  {
+    Up,
+    Down,
+    None
+  };
+
   Player(const sf::RenderWindow& window);
 
-  sf::RectangleShape shape;
-  sf::Vector2f velocity;
-  bool movePlayerUp;
-  bool movePlayerDown;
-  sf::Vector2f previousPosition;
+  sf::FloatRect getGlobalAABB() const;
+  void setMovementDirection(const Direction& direction);
 
   void setVelocity();
 
@@ -25,6 +29,13 @@ public:
   void draw(const sf::Time& accumulator, const sf::Time& timeStep, sf::RenderWindow& window);
   void move(const sf::Time& timeStep);
   void reset(const sf::RenderWindow& window);
+private:
+  sf::RectangleShape shape;
+  sf::Vector2f velocity;
+  sf::Vector2f previousPosition;
+
+  bool movePlayerUp;
+  bool movePlayerDown;
 };
 
 #endif

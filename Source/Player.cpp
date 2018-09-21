@@ -12,10 +12,32 @@ sf::RectangleShape createPlayerShape(const sf::RenderWindow& window)
 Player::Player(const sf::RenderWindow& window)
   : shape{createPlayerShape(window)}
   , velocity{0.f, 0.f}
+  , previousPosition{shape.getPosition()}
   , movePlayerUp{false}
   , movePlayerDown{false}
-  , previousPosition{shape.getPosition()}
 {
+}
+
+sf::FloatRect Player::getGlobalAABB() const
+{
+  return shape.getGlobalBounds();
+}
+
+void Player::setMovementDirection(const Direction& direction)
+{
+  if (direction == Direction::Up)
+  {
+    movePlayerUp = true;
+  }
+  else if (direction == Direction::Down)
+  {
+    movePlayerDown = true;
+  }
+  else if (direction == Direction::None)
+  {
+    movePlayerUp = false;
+    movePlayerDown = false;
+  }
 }
 
 void Player::setVelocity()
