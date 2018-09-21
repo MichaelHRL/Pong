@@ -72,9 +72,9 @@ sf::Vector2f reflectedVector(const sf::FloatRect& paddle, const Ball& ball)
 
 void handlePlayerBallCollision(const Player& player, Ball& ball)
 {
-  if (player.shape.getGlobalBounds().intersects(ball.getGlobalAABB()) && ball.getVelocity().x < 0)
+  if (player.getGlobalAABB().intersects(ball.getGlobalAABB()) && ball.getVelocity().x < 0)
   {
-    const sf::Vector2f newVelocity{reflectedVector(player.shape.getGlobalBounds(), ball)};
+    const sf::Vector2f newVelocity{reflectedVector(player.getGlobalAABB(), ball)};
     ball.setVelocity(newVelocity.x, newVelocity.y);
   }
 }
@@ -122,11 +122,11 @@ void handleKeyPressEvent(GameState& currentGameState, const sf::Event& event, Ba
   {
     if (event.key.code == sf::Keyboard::Up)
     {
-      player.movePlayerUp = true;
+      player.setMovementDirection(Player::Direction::Up);
     }
     else if (event.key.code == sf::Keyboard::Down)
     {
-      player.movePlayerDown = true;
+      player.setMovementDirection(Player::Direction::Down);
     }
   }
   else if (currentGameState == GameState::Menu)
@@ -170,11 +170,11 @@ void handleKeyReleaseEvent(const GameState& currentGameState, const sf::Event& e
   {
     if (event.key.code == sf::Keyboard::Up)
     {
-      player.movePlayerUp = false;
+      player.setMovementDirection(Player::Direction::None);
     }
     else if (event.key.code == sf::Keyboard::Down)
     {
-      player.movePlayerDown = false;
+      player.setMovementDirection(Player::Direction::None);
     }
   }
 }
