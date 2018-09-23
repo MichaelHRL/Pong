@@ -1,4 +1,5 @@
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include <iostream>
 #include <cmath>
 #include "Ball.hh"
@@ -76,6 +77,7 @@ void handlePlayerBallCollision(const Player& player, Ball& ball)
   {
     const sf::Vector2f newVelocity{reflectedVector(player.getGlobalAABB(), ball)};
     ball.setVelocity(newVelocity.x, newVelocity.y);
+    ball.playAudio();
   }
 }
 
@@ -85,6 +87,7 @@ void handleOpponentBallCollision(const Opponent& opponent, Ball& ball)
   {
     const sf::Vector2f newVelocity{reflectedVector(opponent.getGlobalAABB(), ball)};
     ball.setVelocity(-newVelocity.x, newVelocity.y);
+    ball.playAudio();
   }
 }
 
@@ -195,13 +198,32 @@ void setState(GameState& currentGameState, const Ball& ball, const sf::RenderWin
 
 void startGame()
 {
+  sf::SoundBuffer winSoundBuffer;
+  if (!winSoundBuffer.loadFromFile("../Resources/Win.wav"))
+  {
+    throw "Could not load Win.wav";
+  }
+
+  sf::Sound winSound{winSoundBuffer};
+  bool playedWinStateAudio{false};
+
+  sf::SoundBuffer loseSoundBuffer;
+  if (!loseSoundBuffer.loadFromFile("../Resources/Lose.wav"))
+  {
+    throw "Could not load Lose.wav";
+  }
+
+  sf::Sound loseSound{loseSoundBuffer};
+  bool playedLoseStateAudio{false};
+  
+
   sf::RenderWindow window{sf::VideoMode{500, 500}, "Pong"};
 
   Ball ball{window};
   Player player{window};
   Opponent opponent{window};
-
-
+  
+  
   sf::Font font;
   if (!font.loadFromFile("C:\\Windows\\Fonts\\Arial.ttf"))
   {
@@ -264,18 +286,40 @@ void startGame()
       ball.draw(accumulator, timeStep, window);
       player.draw(accumulator, timeStep, window);
       opponent.draw(accumulator, timeStep, window);
+      
+      playedWinStateAudio = false;
+      playedLoseStateAudio = false;
     }
     else if (currentGameState == GameState::Menu)
     {
       window.draw(menuText);
+
+      playedWinStateAudio = false;
+      playedLoseStateAudio = false;
     }
     else if (currentGameState == GameState::Lose)
     {
       window.draw(loseText);
+
+      if (!playedLoseStateAudio)
+      {
+        loseSound.play();
+        playedLoseStateAudio = true;
+      }
+
+      playedWinStateAudio = false;
     }
     else if (currentGameState == GameState::Win)
     {
       window.draw(winText);
+      
+      if (!playedWinStateAudio)
+      {
+        winSound.play();
+        playedWinStateAudio = true;
+      }
+
+      playedLoseStateAudio = false;
     }
     
     window.display();

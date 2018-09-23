@@ -13,6 +13,17 @@ Ball::Ball(const sf::RenderWindow& window)
   , velocity{424.f, 0.f}
   , previousPosition{shape.getPosition()}
 {
+  if (!buffer.loadFromFile("../Resources/Impact.wav"))
+  {
+    throw "Could not load audio";
+  }
+
+  sound.setBuffer(buffer);
+}
+
+void Ball::playAudio()
+{
+  sound.play();
 }
 
 sf::Vector2f Ball::getPosition() const
@@ -62,10 +73,12 @@ void Ball::handleWallCollision(const sf::RenderWindow& window)
   if (isPenetratingIntoLeftWall(window) || isPenetratingIntoRightWall(window))
   {
     velocity.x *= -1;
+    sound.play();
   }
   if (isPenetratingIntoTopWall(window) || isPenetratingIntoBottomWall(window))
   {
     velocity.y *= -1;
+    sound.play();
   }
 }
 
