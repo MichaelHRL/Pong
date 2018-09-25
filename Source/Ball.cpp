@@ -1,18 +1,15 @@
 #include "Ball.hh"
 
-sf::CircleShape createBallShape(const sf::RenderWindow& window)
+Ball::Ball(const sf::FloatRect& playingField)
+  : playingField{playingField}
 {
-  sf::CircleShape shape{5.f};
-  shape.setPosition(window.getSize().x / 2.f, window.getSize().y / 2.f);
+  startPosition = sf::Vector2f{playingField.width / 2.f, playingField.height / 2.f};
+  startVelocity = sf::Vector2f{424.f, 0.f};
+  
+  shape.setRadius(5.f);
   shape.setFillColor(sf::Color::Green);
-  return shape;
-}
 
-Ball::Ball(const sf::RenderWindow& window)
-  : shape{createBallShape(window)}
-  , velocity{424.f, 0.f}
-  , previousPosition{shape.getPosition()}
-{
+  reset();
 }
 
 sf::Vector2f Ball::getPosition() const
@@ -36,34 +33,34 @@ sf::FloatRect Ball::getGlobalAABB() const
   return shape.getGlobalBounds();
 }
 
-bool Ball::isPenetratingIntoLeftWall(const sf::RenderWindow& window)
+bool Ball::isPenetratingIntoLeftWall() const
 {
-  // The check for velocity is neccessary because it ensures that the shape doesn't stay trapped within a surface
-  return shape.getGlobalBounds().left < 0 && velocity.x < 0;
+  // The check for velocity is neccessary because it ensures that the ball doesn't stay trapped the playingField's area.
+  return (shape.getGlobalBounds().left < playingField.left) && velocity.x < 0;
 }
 
-bool Ball::isPenetratingIntoRightWall(const sf::RenderWindow& window)
+bool Ball::isPenetratingIntoRightWall() const
 {
-  return shape.getGlobalBounds().left + shape.getGlobalBounds().width > window.getSize().x && velocity.x > 0;
+  return (shape.getGlobalBounds().left + shape.getGlobalBounds().width > playingField.left + playingField.width) && velocity.x > 0;
 }
 
-bool Ball::isPenetratingIntoTopWall(const sf::RenderWindow& window)
+bool Ball::isPenetratingIntoTopWall() const
 {
-  return shape.getGlobalBounds().top < 0 && velocity.y < 0;
+  return (shape.getGlobalBounds().top < playingField.top) && velocity.y < 0;
 }
 
-bool Ball::isPenetratingIntoBottomWall(const sf::RenderWindow& window)
+bool Ball::isPenetratingIntoBottomWall() const
 {
-  return shape.getGlobalBounds().top + shape.getGlobalBounds().height > window.getSize().y && velocity.y > 0;
+  return (shape.getGlobalBounds().top + shape.getGlobalBounds().height > playingField.top + playingField.height) && velocity.y > 0;
 }
 
-void Ball::handleWallCollision(const sf::RenderWindow& window)
+void Ball::handleWallCollision()
 {
-  if (isPenetratingIntoLeftWall(window) || isPenetratingIntoRightWall(window))
+  if (isPenetratingIntoLeftWall() || isPenetratingIntoRightWall())
   {
     velocity.x *= -1;
   }
-  if (isPenetratingIntoTopWall(window) || isPenetratingIntoBottomWall(window))
+  if (isPenetratingIntoTopWall() || isPenetratingIntoBottomWall())
   {
     velocity.y *= -1;
   }
@@ -85,9 +82,10 @@ void Ball::move(const sf::Time& timeStep)
   shape.move(velocity * timeStep.asSeconds());
 }
 
-void Ball::reset(const sf::RenderWindow& window)
+void Ball::reset()
 {
-  shape.setPosition(window.getSize().x / 2.f, window.getSize().y / 2.f);
-  velocity.x = 424.f;
-  velocity.y = 0.f;
+  shape.setPosition(startPosition);
+
+  velocity = startVelocity;
+  previousPosition = startPosition;
 }
