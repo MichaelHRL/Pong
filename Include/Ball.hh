@@ -6,7 +6,7 @@
 class Ball
 {
 public:
-  Ball(const sf::FloatRect& window);
+  Ball(const sf::FloatRect& playingField);
 
   sf::Vector2f getPosition() const;
   sf::Vector2f getVelocity() const;
