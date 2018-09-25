@@ -16,7 +16,7 @@ enum class GameState
 
 void resetEntities(Ball& ball, Player& player, Opponent& opponent, const sf::RenderWindow& window)
 {
-  ball.reset(window);
+  ball.reset();
   player.reset(window);
   opponent.reset(window);
 }
@@ -196,8 +196,9 @@ void setState(GameState& currentGameState, const Ball& ball, const sf::RenderWin
 void startGame()
 {
   sf::RenderWindow window{sf::VideoMode{500, 500}, "Pong"};
+  const sf::FloatRect playingField{0.f, 0.f, static_cast<float>(window.getSize().x), static_cast<float>(window.getSize().y)};
 
-  Ball ball{window};
+  Ball ball{playingField};
   Player player{window};
   Opponent opponent{window};
 
@@ -249,7 +250,7 @@ void startGame()
 
       moveEntities(clock, accumulator, timeStep, player, opponent, ball);     
 
-      ball.handleWallCollision(window);
+      ball.handleWallCollision();
       player.handleWallCollision(window);
       opponent.handleWallCollision(window);
 
