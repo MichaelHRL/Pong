@@ -226,7 +226,7 @@ void startGame()
   
   
   sf::Font font;
-  if (!font.loadFromFile("C:\\Windows\\Fonts\\Arial.ttf"))
+  if (!font.loadFromFile("../Resources/Arial.ttf"))
   {
     throw "Couldn't load font";
   }
