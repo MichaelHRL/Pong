@@ -8,8 +8,19 @@ Ball::Ball(const sf::FloatRect& playingField)
   
   shape.setRadius(5.f);
   shape.setFillColor(sf::Color::Green);
-
   reset();
+
+  if (!buffer.loadFromFile("../Resources/Impact.wav"))
+  {
+    throw "Could not load audio";
+  }
+
+  sound.setBuffer(buffer);
+}
+
+void Ball::playAudio()
+{
+  sound.play();
 }
 
 sf::Vector2f Ball::getPosition() const
@@ -59,10 +70,12 @@ void Ball::handleWallCollision()
   if (isPenetratingIntoLeftWall() || isPenetratingIntoRightWall())
   {
     velocity.x *= -1;
+    sound.play();
   }
   if (isPenetratingIntoTopWall() || isPenetratingIntoBottomWall())
   {
     velocity.y *= -1;
+    sound.play();
   }
 }
 
