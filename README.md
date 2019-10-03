@@ -1,6 +1,3 @@
-# Demo
-https://www.youtube.com/watch?v=PWSb_3Xz8tI
-
 # Dependencies
 * [SFML (>= 2.5.0)](https://www.sfml-dev.org/)
 * C++ compiler (>= C++11) (I used GCC 7.3.0 via [MSYS2](https://www.msys2.org/))
